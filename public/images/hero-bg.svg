@@ -1,0 +1,33 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#04060f" />
+      <stop offset="40%" stop-color="#0b0d1a" />
+      <stop offset="100%" stop-color="#02030a" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#27418a" stop-opacity="0.9" />
+      <stop offset="60%" stop-color="#141733" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#060714" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#grad)" />
+  <ellipse cx="800" cy="360" rx="900" ry="540" fill="url(#glow)" />
+  <g fill="#0f152e" opacity="0.35">
+    <circle cx="350" cy="620" r="220" />
+    <circle cx="1180" cy="650" r="260" />
+    <circle cx="780" cy="520" r="180" />
+  </g>
+  <g fill="#b5fffb" opacity="0.3">
+    <circle cx="420" cy="280" r="6" />
+    <circle cx="1090" cy="240" r="5" />
+    <circle cx="680" cy="180" r="7" />
+    <circle cx="890" cy="120" r="4" />
+    <circle cx="1210" cy="320" r="8" />
+  </g>
+  <g fill="#8b5cf6" opacity="0.45">
+    <circle cx="300" cy="150" r="18" />
+    <circle cx="1360" cy="210" r="14" />
+    <circle cx="520" cy="90" r="10" />
+  </g>
+</svg>
