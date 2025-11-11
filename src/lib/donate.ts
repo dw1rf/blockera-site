@@ -1,4 +1,4 @@
-export type ProductCategory = "privilege" | "case" | "booster" | "cosmetic";
+﻿export type ProductCategory = "privilege" | "case" | "booster" | "cosmetic";
 
 export interface Product {
   id: string;
@@ -7,80 +7,104 @@ export interface Product {
   category: ProductCategory;
   price: number;
   highlight?: string;
+  commands?: string;
+  regionLimit?: number;
+  easyDonateProductId?: string;
+  easyDonateServerId?: number;
 }
 
 export const products: Product[] = [
   {
+    id: "creative",
+    name: "Креатив",
+    description: "Свобода создания и выживания.",
+    commands:
+      "/gm или /gamemode 1; /back; до 5 домов — /sethome <имя> / /home <имя>; /me <сообщение>; /jobs; /chatcolor gui.",
+    category: "privilege",
+    price: 349,
+    regionLimit: 200_000,
+    easyDonateProductId: "1030373"
+  },
+  {
+    id: "admin",
+    name: "Админ",
+    description: "Полный контроль над сервером.",
+    commands: "/kick <игрок>; /mute <игрок> / /unmute <игрок>; /mutechat / /unmutechat; /tp <игрок>; до 7 домов — /sethome <имя> / /home <имя>.",
+    category: "privilege",
+    price: 549,
+    regionLimit: 300_000,
+    easyDonateProductId: "1030968"
+  },
+  {
+    id: "moderator",
+    name: "Модератор",
+    description: "Поддержание порядка на сервере.",
+    commands: "/jail <игрок> / /unjail <игрок>; /nick <ник>; до 10 домов — /sethome.",
+    category: "privilege",
+    price: 499,
+    regionLimit: 350_000,
+    easyDonateProductId: "1030971"
+  },
+  {
+    id: "soul",
+    name: "Soul",
+    description: "Расширенные возможности модерации.",
+    commands: "/ban <игрок> / /unban <игрок>; /fly <игрок>; /heal; до 12 домов — /sethome <имя> / /home <имя>.",
+    category: "privilege",
+    price: 699,
+    regionLimit: 400_000,
+    easyDonateProductId: "1030972"
+  },
+  {
+    id: "platinum",
+    name: "Platinum",
+    description: "Расширенный креативный инструмент.",
+    commands:
+      "/speed [уровень]; /undo; /navigate; базовое редактирование регионов — /set / /expand; rg flag: block-break / block-place / PvP / item-drop.",
+    category: "privilege",
+    price: 799,
+    regionLimit: 500_000,
+    easyDonateProductId: "1030973"
+  },
+  {
     id: "legend",
-    name: "LEGEND",
-    description: "Доступ ко всем /fly зонам, 6 наборов, персональный ник и выделенный слот на сервере.",
+    name: "Legend",
+    description: "Легендарный статус и управление погодой.",
+    commands: "/time <день|ночь|число>; /jobs (до 7 профессий); /snow / /thaw; /wg teleport own; /wg priority.",
     category: "privilege",
-    price: 1499,
-    highlight: "Хит продаж"
+    price: 1149,
+    regionLimit: 1_000_000,
+    easyDonateProductId: "1030974"
   },
   {
-    id: "titan",
-    name: "TITAN",
-    description: "Эксклюзивные частицы, +3 /home, усиленный дроп ресурсов и редкий питомец.",
+    id: "immortal",
+    name: "Immortal",
+    description: "Бессмертная мощь для строителей и модераторов.",
+    commands: "/kill <игрок>; /clearzone; /tphere <игрок>; полный доступ к кистям — /brush.*; /removebelow / /removenear.",
     category: "privilege",
-    price: 999
+    price: 2149,
+    regionLimit: 2_000_000,
+    easyDonateProductId: "1030975"
   },
   {
-    id: "premium",
-    name: "PREMIUM",
-    description: "/kit premium каждые 24 часа, +2 /home и доступ к приватной шахте.",
+    id: "shine",
+    name: "Shine",
+    description: "Сияющая сила для продвинутых строителей.",
+    commands: "//cylinder; //sphere; //line; /wg teleport.",
     category: "privilege",
-    price: 599
+    price: 4599,
+    regionLimit: 2_500_000,
+    easyDonateProductId: "1030976"
   },
   {
-    id: "starter",
-    name: "STARTER",
-    description: "Набор новичка, +1 /home, эффект Night Vision и быстрый доступ к аукциону.",
+    id: "ethereal",
+    name: "Ethereal",
+    description: "Высшая форма власти и полный набор инструментов WorldEdit.",
+    commands: "/chatcolor change <цвет>; доступ к copy, paste, rotate; /delchunks; /jobs (до 10 профессий).",
     category: "privilege",
-    price: 299
-  },
-  {
-    id: "battle-pass",
-    name: "Battle Pass S3",
-    description: "120 уровней наград, уникальные скины, титулы и внутриигровая валюта.",
-    category: "booster",
-    price: 899,
-    highlight: "Сезонное предложение"
-  },
-  {
-    id: "crate-mystic",
-    name: "Mystic Case",
-    description: "Шанс получить легендарное оружие, анимированные плащи и эффектные крылья.",
-    category: "case",
-    price: 459
-  },
-  {
-    id: "crate-epic",
-    name: "Epic Case",
-    description: "Редкие инструменты с уникальными чарами и косметика для лобби.",
-    category: "case",
-    price: 259
-  },
-  {
-    id: "booster-farm",
-    name: "Фарм бустер x2",
-    description: "Удваивает доход фермы и автосбор ресурсов на 7 дней.",
-    category: "booster",
-    price: 349
-  },
-  {
-    id: "tag-custom",
-    name: "Индивидуальный тег",
-    description: "Создай уникальный префикс в чате с проверкой модератором.",
-    category: "cosmetic",
-    price: 199
-  },
-  {
-    id: "particles",
-    name: "Аура портала",
-    description: "Косметический эффект в лобби и на спавне, подчеркивающий статус.",
-    category: "cosmetic",
-    price: 149
+    price: 8190,
+    regionLimit: 5_000_000,
+    easyDonateProductId: "1030978"
   }
 ];
 

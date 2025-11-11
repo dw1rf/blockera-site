@@ -1,37 +1,54 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
+import type { Route } from "next";
+import type { UrlObject } from "url";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { MenuIcon, XIcon, SendIcon, MessageCircleIcon } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import { MenuIcon, MessageCircleIcon, SendIcon, XIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { label: "Главная", href: "/" },
-  { label: "Донат", href: "/donate" },
-  { label: "Как начать", href: "/#how-to-start" },
-  { label: "FAQ", href: "/#faq" }
-];
+type NavItem =
+  | { label: string; href: Route | UrlObject }
+  | { label: string; href: string; external: true };
+
+const baseNavItems: ReadonlyArray<NavItem> = [
+  { label: "Р“Р»Р°РІРЅР°СЏ", href: "/" as Route },
+  { label: "Р”РѕРЅР°С‚", href: "/donate" as Route },
+  { label: "РљР°Рє РЅР°С‡Р°С‚СЊ", href: { pathname: "/", hash: "how-to-start" } },
+  { label: "FAQ", href: { pathname: "/", hash: "faq" } },
+  { label: "Wiki", href: "https://blockera-2.gitbook.io/blockera.wiki/", external: true }
+] as const;
 
 export function Header() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+
+  const isAdmin = session?.user.role === "ADMIN";
+
+  const navItems = isAdmin ? [...baseNavItems, { label: "РђРґРјРёРЅ", href: "/admin" as Route }] : baseNavItems;
 
   const handleToggle = () => setOpen((prev) => !prev);
   const closeMenu = () => setOpen(false);
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+  };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-midnight/80 backdrop-blur-md">
+    <header className="site-header fixed inset-x-0 top-0 z-50 bg-midnight/80 backdrop-blur-md transition-opacity duration-300">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="flex items-center gap-3" onClick={closeMenu}>
-          <div className="relative h-12 w-12">
+          <div className="h-12 w-12">
             <Image
-              src="/images/logo-earth.png"
+              src="/images/logo.png"
               alt="Blockera Logo"
-              fill
+              width={48}
+              height={48}
               priority
               className="rounded-xl object-contain"
             />
@@ -44,16 +61,33 @@ export function Header() {
 
         <nav className="hidden items-center gap-8 md:flex">
           {navItems.map((item) => {
-            const isAnchor = item.href.startsWith("/#");
-            const isActive = isAnchor
-              ? pathname === "/"
-              : item.href !== "/" && item.href !== "/#"
-              ? pathname.startsWith(item.href)
-              : pathname === item.href;
+            const key =
+              typeof item.href === "string"
+                ? item.href
+                : `${item.href.pathname ?? ""}${item.href.hash ?? ""}`;
+            if ("external" in item && item.external) {
+              return (
+                <a
+                  key={key}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm uppercase tracking-[0.3em] text-white/60 transition hover:text-white"
+                >
+                  {item.label}
+                </a>
+              );
+            }
+
+            const internalHref = item.href as Route | UrlObject;
+            const targetPath = typeof internalHref === "string" ? internalHref : internalHref.pathname ?? "/";
+            const isAnchor = typeof internalHref !== "string" && Boolean(internalHref.hash);
+            const isActive = isAnchor ? pathname === targetPath : pathname.startsWith(targetPath === "/" ? "/" : targetPath);
+
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={key}
+                href={internalHref}
                 className={cn(
                   "text-sm uppercase tracking-[0.3em] text-white/60 transition hover:text-white",
                   isActive && "text-white"
@@ -66,14 +100,33 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="outline" size="sm" className="gap-2">
+          <a href="https://t.me/Block_Era"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "flex items-center gap-2"
+            )}
+          >
             <SendIcon className="h-4 w-4" />
-            Телеграм
-          </Button>
-          <Button size="sm" className="gap-2 bg-gradient-to-r from-primary to-purple-500">
+            Telegram
+          </a>
+          <a href="https://discord.gg/c5xAPdHhZW"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              buttonVariants({ size: "sm" }),
+              "flex items-center gap-2 bg-gradient-to-r from-primary to-purple-500"
+            )}
+          >
             <MessageCircleIcon className="h-4 w-4" />
             Discord
-          </Button>
+          </a>
+          {isAdmin ? (
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              Р’С‹Р№С‚Рё
+            </Button>
+          ) : null}
         </div>
 
         <button
@@ -92,28 +145,70 @@ export function Header() {
         )}
       >
         <div className="space-y-6 border-t border-white/10 bg-midnight/95 px-6 pb-10 pt-6">
-          <nav className="flex flex-col gap-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closeMenu}
-                className="text-sm uppercase tracking-[0.3em] text-white/70"
-              >
-                {item.label}
-              </Link>
-            ))}
+                    <nav className="flex flex-col gap-4">
+            {navItems.map((item) => {
+              const key =
+                typeof item.href === "string"
+                  ? item.href
+                  : `${item.href.pathname ?? ""}${item.href.hash ?? ""}`;
+              if ("external" in item && item.external) {
+                return (
+                  <a
+                    key={key}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeMenu}
+                    className="text-sm uppercase tracking-[0.3em] text-white/70"
+                  >
+                    {item.label}
+                  </a>
+                );
+              }
+              return (
+                <Link
+                  key={key}
+                  href={item.href as Route | UrlObject}
+                  onClick={closeMenu}
+                  className="text-sm uppercase tracking-[0.3em] text-white/70"
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="flex flex-col gap-3">
-            <Button variant="outline" className="gap-2">
-              <SendIcon className="h-4 w-4" /> Телеграм
-            </Button>
-            <Button className="gap-2 bg-gradient-to-r from-primary to-purple-500">
+            <a
+              href="https://t.me/Block_Era"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(buttonVariants({ variant: "outline" }), "flex items-center gap-2")}
+            >
+              <SendIcon className="h-4 w-4" /> Telegram
+            </a>
+            <a
+              href="https://discord.gg/c5xAPdHhZW"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants(),
+                "flex items-center gap-2 bg-gradient-to-r from-primary to-purple-500"
+              )}
+            >
               <MessageCircleIcon className="h-4 w-4" /> Discord
-            </Button>
+            </a>
+            {isAdmin ? (
+              <Button variant="outline" onClick={handleSignOut}>
+                Р’С‹Р№С‚Рё
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>
     </header>
   );
 }
+
+
+
+

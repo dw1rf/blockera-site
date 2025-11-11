@@ -1,18 +1,21 @@
-const steps = [
+﻿const steps = [
   {
     number: "01",
-    title: "Установи Minecraft 1.20",
-    description: "Выбери лицензионный лаунчер или TLauncher, обновись до версии 1.20 и подготовь аккаунт."
+    title: "Обнови Minecraft до 1.20",
+    description:
+      "Скачай официальный лаунчер или TLauncher, выбери актуальную версию 1.20 и убедись, что установлены все необходимые файлы."
   },
   {
     number: "02",
-    title: "Добавь сервер",
-    description: "Открой список серверов и добавь адрес play.blockera.ru. Убедись, что пинг стабильный."
+    title: "Добавь сервер в список",
+    description:
+      "Открой раздел многопользовательской игры и укажи адрес blockera.goida.host. Проверь стабильность пинга и сохрани сервер в избранное."
   },
   {
     number: "03",
-    title: "Начни приключение",
-    description: "Зайди в игру, выполни стартовый квест и получи набор новичка в центре спавна."
+    title: "Войди и начинай приключение",
+    description:
+      "Запускайся, знакомься с хабом и следуй подсказкам модераторов. Активируй стартовый набор и присоединяйся к ивентам."
   }
 ];
 
@@ -20,12 +23,14 @@ export function HowToStartSection() {
   return (
     <section id="how-to-start" className="relative mx-auto max-w-6xl px-6 py-24">
       <div className="mx-auto flex max-w-3xl flex-col gap-4 text-center">
-        <span className="text-xs uppercase tracking-[0.4em] text-primary">как начать</span>
+        <span className="text-xs uppercase tracking-[0.4em] text-primary">
+          Как начать играть
+        </span>
         <h2 className="text-balance text-3xl font-semibold uppercase tracking-[0.2em] text-white md:text-4xl">
-          Присоединиться просто
+          Подключайся за пару шагов
         </h2>
         <p className="text-base text-white/70">
-          Выполни три шага — и ты уже на сервере вместе с друзьями. Всё прозрачно и работает без задержек.
+          Собрали короткий чек-лист, чтобы ты не потерялся в настройках. Возьми актуальную версию клиента, добавь наш сервер и залетай в блокерское приключение.
         </p>
       </div>
 

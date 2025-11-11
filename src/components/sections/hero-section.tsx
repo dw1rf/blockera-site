@@ -1,99 +1,122 @@
-"use client";
-
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { ArrowRightIcon, SparklesIcon } from "lucide-react";
+import { ShieldIcon, SparklesIcon, UsersIcon } from "lucide-react";
 
 import { CopyIpButton } from "@/components/copy-ip-button";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const HERO_TEXT = {
+  badge: "Сервер выживания Minecraft",
+  heading:
+    " Blockera — приключение, которое не становится рутиной",
+  description:
+    " Исследуйте выживание с честным балансом, сезонными событиями без pay‑to‑win. Собирайте друзей, стройте базы и побеждайте в соревновательных активностях.",
+  donateLink: "Перейти в магазин",
+  statsTitleVersion: "Версия Java",
+  statsTitlePlayers: " Вместимость",
+  statsTitleCommunity: "Сообщество",
+  statsValueVersion: "1.20.x",
+  statsValuePlayers: "500 онлайн",
+  statsValueCommunity: "discord.gg/c5xAPdHhZW",
+  reasonsTitle: "Почему игроки остаются",
+  quickFactsTitle: "Коротко о главном",
+  quickFacts: [
+    "Выделенный хостинг в Европе.",
+    "Ежедневные бэкапы и защита от гриферов.",
+    "Ответ поддержки до 10 минут."
+  ]
+} as const;
+
+const heroHighlights = [
+{
+    icon: <SparklesIcon className="h-5 w-5" />,
+    title: "Сезонные события",
+    description: "Еженедельные квесты и дропы от команды гейм-дизайна."
+  },
+  {
+    icon: <ShieldIcon className="h-5 w-5" />,
+    title: "Честная игра",
+    description: "Правила сервера и античит держат PvP честным 24/7."
+  },
+  {
+    icon: <UsersIcon className="h-5 w-5" />,
+    title: "Активное сообщество",
+    description: "Отзывчивая команда и живой Discord — легко собрать пати."
+  }
+] as const;
 
 export function HeroSection() {
-  const ref = useRef<HTMLElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const floatingY = useTransform(scrollYProgress, [0, 1], ["0%", "-20%"]);
-
   return (
-    <section ref={ref} className="relative isolate overflow-hidden">
-      <div className="absolute inset-0">
-        <motion.div style={{ y: backgroundY }} className="absolute inset-0">
-          <Image
-            src="/images/hero-bg.svg"
-            alt="Подземный мир Minecraft"
-            fill
-            priority
-            className="object-cover"
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-midnight/80 to-midnight" />
+    <section className="relative overflow-hidden bg-midnight-light/30">
+      <div className="pointer-events-none absolute inset-0">
+        <Image src="/images/hero-bg.svg" alt="" fill priority className="object-cover opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-midnight/10 via-midnight/80 to-midnight" />
       </div>
 
-      <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 pb-28 pt-40 text-center">
-        <motion.div style={{ y: floatingY }} className="flex flex-col items-center gap-6">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.4em] text-white/70">
-            <SparklesIcon className="h-3.5 w-3.5" /> сезон 3 уже запущен
-          </span>
-          <h1 className="max-w-3xl text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.2em] text-white drop-shadow-[0_20px_60px_rgba(20,20,60,0.75)] md:text-6xl">
-            Исследуй Blockera — твой новый мир Minecraft
+      <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 pb-24 pt-28 md:grid-cols-[minmax(0,1fr)_400px] md:pb-32 md:pt-32">
+        <div className="space-y-8">
+          <span className="text-xs uppercase tracking-[0.4em] text-primary">{HERO_TEXT.badge}</span>
+          <h1 className="text-balance text-4xl font-semibold uppercase leading-tight tracking-[0.15em] text-white md:text-5xl">
+            {HERO_TEXT.heading}
           </h1>
-          <p className="max-w-2xl text-base text-white/70 md:text-lg">
-            Уникальные данжи, кастомные ивенты, честная экономика и мгновенная выдача привилегий. Подключайся уже
-            сегодня и стань частью растущего сообщества Blockera.
-          </p>
-          <div className="flex flex-col items-center gap-4 md:flex-row">
-            <CopyIpButton ipAddress="play.blockera.ru" />
-            <Button variant="outline" className="gap-2 border-white/30 bg-white/5">
-              <ArrowRightIcon className="h-4 w-4" /> Подробнее о сервере
-            </Button>
-          </div>
-        </motion.div>
-
-        <motion.div
-          style={{ y: floatingY }}
-          className="grid w-full gap-6 md:grid-cols-3"
-        >
-          {cards.map((card) => (
-            <div
-              key={card.title}
-              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 text-left shadow-card backdrop-blur-sm"
+          <p className="max-w-xl text-base text-white/70 md:text-lg">{HERO_TEXT.description}</p>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <CopyIpButton ipAddress="blockera.goida.host" />
+            <Link
+              href="/donate"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "default" }),
+                "w-full gap-2 border-white/20 sm:w-auto"
+              )}
             >
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white/10 via-transparent to-transparent" />
-              <p className="text-xs uppercase tracking-[0.35em] text-primary/80">{card.tag}</p>
-              <h3 className="mt-3 text-2xl font-semibold tracking-wide text-white">{card.title}</h3>
-              <p className="mt-3 text-sm text-white/65">{card.description}</p>
-              <Link href={card.href} className="mt-6 inline-flex items-center text-sm font-medium text-primary">
-                {card.link}
-              </Link>
+              {HERO_TEXT.donateLink}
+            </Link>
+          </div>
+          <dl className="grid gap-6 text-sm text-white/70 sm:grid-cols-3">
+            <div>
+              <dt className="text-xs uppercase tracking-[0.35em] text-white/40">{HERO_TEXT.statsTitleVersion}</dt>
+              <dd className="mt-2 text-lg font-semibold text-white">{HERO_TEXT.statsValueVersion}</dd>
             </div>
-          ))}
-        </motion.div>
+            <div>
+              <dt className="text-xs uppercase tracking-[0.35em] text-white/40">{HERO_TEXT.statsTitlePlayers}</dt>
+              <dd className="mt-2 text-lg font-semibold text-white">{HERO_TEXT.statsValuePlayers}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-[0.35em] text-white/40">{HERO_TEXT.statsTitleCommunity}</dt>
+              <dd className="mt-2 text-lg font-semibold text-white">{HERO_TEXT.statsValueCommunity}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="relative hidden md:block">
+          <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-primary/30 via-transparent to-purple-500/20 blur-3xl" />
+          <div className="relative h-full rounded-3xl border border-white/10 bg-white/[0.06] p-8 shadow-card backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.35em] text-white/40">{HERO_TEXT.reasonsTitle}</p>
+            <div className="mt-8 space-y-6">
+              {heroHighlights.map((item) => (
+                <div key={item.title} className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+                    {item.icon}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-base font-medium text-white">{item.title}</p>
+                    <p className="text-sm text-white/60">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-10 rounded-2xl border border-white/10 bg-black/30 p-6 text-sm text-white/60">
+              <p className="font-medium uppercase tracking-[0.3em] text-white/50">{HERO_TEXT.quickFactsTitle}</p>
+              <ul className="mt-4 space-y-2">
+                {HERO_TEXT.quickFacts.map((fact) => (
+                  <li key={fact}>{fact}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
-
-const cards = [
-  {
-    tag: "community",
-    title: "1 500+ активных игроков",
-    description: "Ежедневные заходы, совместные ивенты и дружелюбный дискорд-сервер с модераторами 24/7.",
-    link: "Присоединиться к Discord",
-    href: "#community"
-  },
-  {
-    tag: "progress",
-    title: "Экономика с прогрессом",
-    description: "Фермы, торговцы и уникальные предметы, которые влияют на развитие и PvP баланс.",
-    link: "Узнать особенности",
-    href: "#features"
-  },
-  {
-    tag: "support",
-    title: "Поддержка EasyDonate",
-    description: "Оплачивай донат в пару кликов и получай привилегии автоматически через RCON.",
-    link: "Перейти к донату",
-    href: "/donate"
-  }
-];

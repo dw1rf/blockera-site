@@ -24,3 +24,17 @@ npm run lint    # проверка ESLint
 - Магазин доната с поиском, фильтрами, сортировкой и карточками товаров.
 - Компоненты кнопок и копирования IP адреса.
 - Адаптивная вёрстка, тёмная тема и неоновые акценты.
+
+## Интеграция EasyDonate
+
+1. Получите `Shop-Key`, ID сервера и товары в панели [EasyDonate](https://cp.easydonate.ru) и пропишите переменные окружения:
+
+   ```env
+   EASYDONATE_SHOP_KEY="..."
+   EASYDONATE_DEFAULT_SERVER_ID="123456"
+   EASYDONATE_SUCCESS_URL="https://blockera.space/donate?status=success"
+   ORDER_EXPIRATION_MINUTES=30
+   ```
+
+2. Для каждого товара в админке заполните поля «ID товара в EasyDonate» и при необходимости «ID сервера EasyDonate».
+3. Настройте Callback URL в панели EasyDonate на `https://<домен>/api/webhooks/easydonate`, чтобы подтверждения платежей автоматически обновляли заказы.

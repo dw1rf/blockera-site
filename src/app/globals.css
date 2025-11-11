@@ -10,6 +10,11 @@ body {
   @apply bg-midnight text-white font-body antialiased;
 }
 
+body.donate-modal-open .site-header {
+  opacity: 0;
+  pointer-events: none;
+}
+
 ::selection {
   @apply bg-primary text-white;
 }

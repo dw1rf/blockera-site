@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
@@ -29,12 +29,12 @@ export function CopyIpButton({ ipAddress }: CopyIpButtonProps) {
     >
       {copied ? (
         <>
-          <CheckIcon className="h-4 w-4" /> Скопировано
+          <CheckIcon className="h-4 w-4" /> IP copied
         </>
       ) : (
         <>
           <CopyIcon className="h-4 w-4 transition-transform group-hover:rotate-6" />
-          Скопировать IP
+          Copy IP
         </>
       )}
     </Button>

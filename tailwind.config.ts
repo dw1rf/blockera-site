@@ -15,7 +15,7 @@ const config: Config = {
         "midnight-light": "#10142A"
       },
       fontFamily: {
-        heading: ["Poppins", "sans-serif"],
+        heading: ["Montserrat", "sans-serif"],
         body: ["Inter", "sans-serif"]
       },
       backgroundImage: {
