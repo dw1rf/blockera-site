@@ -17,9 +17,9 @@ type NavItem =
   | { label: string; href: string; external: true };
 
 const baseNavItems: ReadonlyArray<NavItem> = [
-  { label: "Р“Р»Р°РІРЅР°СЏ", href: "/" as Route },
-  { label: "Р”РѕРЅР°С‚", href: "/donate" as Route },
-  { label: "РљР°Рє РЅР°С‡Р°С‚СЊ", href: { pathname: "/", hash: "how-to-start" } },
+  { label: "Главная", href: "/" as Route },
+  { label: "Донат", href: "/donate" as Route },
+  { label: "Как начать", href: { pathname: "/", hash: "how-to-start" } },
   { label: "FAQ", href: { pathname: "/", hash: "faq" } },
   { label: "Wiki", href: "https://blockera-2.gitbook.io/blockera.wiki/", external: true }
 ] as const;
@@ -31,7 +31,7 @@ export function Header() {
 
   const isAdmin = session?.user.role === "ADMIN";
 
-  const navItems = isAdmin ? [...baseNavItems, { label: "РђРґРјРёРЅ", href: "/admin" as Route }] : baseNavItems;
+  const navItems = isAdmin ? [...baseNavItems, { label: "Админ", href: "/admin" as Route }] : baseNavItems;
 
   const handleToggle = () => setOpen((prev) => !prev);
   const closeMenu = () => setOpen(false);
@@ -124,7 +124,7 @@ export function Header() {
           </a>
           {isAdmin ? (
             <Button variant="outline" size="sm" onClick={handleSignOut}>
-              Р’С‹Р№С‚Рё
+              Выйти
             </Button>
           ) : null}
         </div>
@@ -199,7 +199,7 @@ export function Header() {
             </a>
             {isAdmin ? (
               <Button variant="outline" onClick={handleSignOut}>
-                Р’С‹Р№С‚Рё
+                Выйти
               </Button>
             ) : null}
           </div>
