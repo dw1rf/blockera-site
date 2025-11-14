@@ -29,12 +29,12 @@ export function CopyIpButton({ ipAddress }: CopyIpButtonProps) {
     >
       {copied ? (
         <>
-          <CheckIcon className="h-4 w-4" /> IP copied
+          <CheckIcon className="h-4 w-4" /> IP скопирован
         </>
       ) : (
         <>
           <CopyIcon className="h-4 w-4 transition-transform group-hover:rotate-6" />
-          Copy IP
+          Скопировать IP
         </>
       )}
     </Button>

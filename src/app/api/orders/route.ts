@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 import { cancelExpiredOrders } from "@/lib/order-utils";
+import { issueThankYouCoupon } from "@/lib/coupons";
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -23,6 +24,7 @@ export async function POST(request: Request) {
     typeof data.email !== "string" ||
     typeof data.productId !== "string" ||
     typeof data.nickname !== "string" ||
+    (data.promoCode && typeof data.promoCode !== "string") ||
     data.email.length === 0 ||
     data.nickname.length === 0
   ) {
@@ -124,7 +126,8 @@ export async function POST(request: Request) {
         userId: user!.id,
         productId: product.id,
         nickname: data.nickname,
-        status: "PENDING"
+        status: "PENDING",
+        promoCodeInput: typeof data.promoCode === "string" && data.promoCode.trim().length > 0 ? data.promoCode.trim() : null
       },
       include: {
         product: true
@@ -157,6 +160,16 @@ export async function POST(request: Request) {
       externalPaymentId
     }
   });
+
+  try {
+    await issueThankYouCoupon({
+      email,
+      userId: user.id,
+      orderId: order.id
+    });
+  } catch (error) {
+    console.error("[orders] Failed to issue coupon", error);
+  }
 
   return NextResponse.json({ paymentUrl }, { status: 201 });
 }

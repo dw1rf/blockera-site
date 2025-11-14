@@ -10,6 +10,7 @@ interface Order {
   nickname: string;
   status: "PENDING" | "COMPLETED" | "FAILED" | "CANCELLED";
   createdAt: string;
+  promoCodeInput?: string | null;
   product: {
     name: string;
     price: number;
@@ -177,8 +178,11 @@ export function OrdersTable({ initialOrders, initialSummary }: Props) {
                   {statusLabels[order.status]}
                 </span>
               </div>
-              <p className="text-sm text-white/60">Игровой ник: {order.nickname}</p>
-              <p className="text-sm text-white/60">Почта: {order.user.email}</p>
+              <p className="text-sm text-white/60">Ник игрока: {order.nickname}</p>
+              <p className="text-sm text-white/60">Email: {order.user.email}</p>
+              {order.promoCodeInput ? (
+                <p className="text-sm text-white/60">Промокод: {order.promoCodeInput}</p>
+              ) : null}
               <p className="text-xs text-white/40">
                 Создан: {new Date(order.createdAt).toLocaleString("ru-RU")}
               </p>
@@ -251,3 +255,4 @@ const statusStyles: Record<Order["status"], string> = {
   FAILED: "border-red-500/50 bg-red-500/10 text-red-200",
   CANCELLED: "border-orange-400/40 bg-orange-400/10 text-orange-200"
 };
+

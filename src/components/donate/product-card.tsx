@@ -18,39 +18,39 @@ interface ProductCardProps {
 type LegalLink = { href: Route; label: string };
 
 const TEXT = {
-  buy: "\u041A\u0443\u043F\u0438\u0442\u044C",
-  closeDialog: "\u0417\u0430\u043A\u0440\u044B\u0442\u044C \u043E\u043A\u043D\u043E",
-  price: "\u0421\u0442\u043E\u0438\u043C\u043E\u0441\u0442\u044C",
-  description: "\u041E\u043F\u0438\u0441\u0430\u043D\u0438\u0435",
-  commands: "\u041A\u043E\u043C\u0430\u043D\u0434\u044B",
-  regionLimit: "\u041E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u0435 \u043F\u0440\u0438\u0432\u0430\u0442\u0430",
+  buy: "Купить",
+  closeDialog: "Закрыть окно",
+  price: "Стоимость",
+  description: "Описание",
+  commands: "Команды",
+  regionLimit: "Ограничение привата",
   legalInfo:
-    "\u041F\u0435\u0440\u0435\u0434 \u043E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u0438\u0435\u043C \u0437\u0430\u043A\u0430\u0437\u0430 \u043E\u0437\u043D\u0430\u043A\u043E\u043C\u044C\u0442\u0435\u0441\u044C \u0441 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u0430\u043C\u0438 \u043D\u0438\u0436\u0435 \u0438 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u0435 \u0433\u0430\u043B\u043E\u0447\u043A\u0430\u043C\u0438.",
-  successPrefix: "\u0418\u0433\u0440\u043E\u043A ",
+    "Перед оформлением заказа ознакомьтесь с документами ниже и подтвердите галочками.",
+  successPrefix: "Игрок ",
   successSuffix:
-    " \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D \u0432 \u043E\u0447\u0435\u0440\u0435\u0434\u044C \u043D\u0430 \u0432\u044B\u0434\u0430\u0447\u0443. \u041A\u043E\u043C\u0430\u043D\u0434\u0430 \u0441\u0432\u044F\u0436\u0435\u0442\u0441\u044F \u0441 \u0432\u0430\u043C\u0438 \u0432 \u0442\u0435\u0447\u0435\u043D\u0438\u0435 10 \u043C\u0438\u043D\u0443\u0442.",
-  nicknameLabel: "\u041D\u0438\u043A\u043D\u0435\u0439\u043C \u0438\u0433\u0440\u043E\u043A\u0430",
-  nicknamePlaceholder: "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0438\u043A",
-  cancel: "\u041E\u0442\u043C\u0435\u043D\u0430",
-  continue: "\u041F\u0440\u043E\u0434\u043E\u043B\u0436\u0438\u0442\u044C",
-  closeButton: "\u0417\u0430\u043A\u0440\u044B\u0442\u044C"
+    " добавлен в очередь на выдачу",
+  nicknameLabel: "Никнейм игрока",
+  nicknamePlaceholder: "Введите ник",
+  cancel: "Отмена",
+  continue: "Продолжить",
+  closeButton: "Закрыть"
 };
 
 const AGREEMENTS = [
   {
     key: "terms",
     label:
-      "\u042F \u043F\u0440\u043E\u0447\u0438\u0442\u0430\u043B \u0438 \u0441\u043E\u0433\u043B\u0430\u0441\u0435\u043D \u0441 \u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u043C \u0441\u043E\u0433\u043B\u0430\u0448\u0435\u043D\u0438\u0435\u043C",
+      "Я прочитал и согласен с Пользовательским соглашением",
     href: "/legal/terms-of-service"
   },
   {
     key: "refund",
-    label: "\u042F \u043E\u0437\u043D\u0430\u043A\u043E\u043C\u043B\u0435\u043D \u0441 \u041F\u043E\u043B\u0438\u0442\u0438\u043A\u043E\u0439 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430",
+    label: "Я ознакомлен с Политикой возврата",
     href: "/legal/refund-policy"
   },
   {
     key: "privacy",
-    label: "\u042F \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u044E \u041F\u043E\u043B\u0438\u0442\u0438\u043A\u0443 \u043A\u043E\u043D\u0444\u0438\u0434\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u0438",
+    label: "Я принимаю Политику конфиденциальности",
     href: "/legal/privacy-policy"
   }
 ] as const;
@@ -63,6 +63,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
   const [agreements, setAgreements] = useState<Record<(typeof AGREEMENTS)[number]["key"], boolean>>({
     terms: false,
     refund: false,
@@ -141,7 +142,8 @@ export function ProductCard({ product }: ProductCardProps) {
       body: JSON.stringify({
         productId: product.id,
         nickname: nickname.trim(),
-        email: email.trim()
+        email: email.trim(),
+        promoCode: promoCode.trim() || undefined
       })
     });
 
@@ -368,19 +370,28 @@ export function ProductCard({ product }: ProductCardProps) {
                         value={email}
                         type="email"
                         onChange={(event) => setEmail(event.target.value)}
-                        placeholder="player@example.com"
+                        placeholder="steve@gmail.com"
                         className="rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-base text-white outline-none transition focus:border-primary focus:bg-white/[0.12]"
                       />
                     </label>
-                    <label className="flex flex-col gap-2 text-sm text-white/80">
-                      {TEXT.nicknameLabel}
-                      <input
-                        value={nickname}
-                        onChange={(event) => setNickname(event.target.value)}
-                        placeholder={TEXT.nicknamePlaceholder}
-                        className="rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-base text-white outline-none transition focus:border-primary focus:bg-white/[0.12]"
-                      />
-                    </label>
+                <label className="flex flex-col gap-2 text-sm text-white/80">
+                  {TEXT.nicknameLabel}
+                  <input
+                    value={nickname}
+                    onChange={(event) => setNickname(event.target.value)}
+                    placeholder={TEXT.nicknamePlaceholder}
+                    className="rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-base text-white outline-none transition focus:border-primary focus:bg-white/[0.12]"
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm text-white/80">
+                  Промокод (если есть)
+                  <input
+                    value={promoCode}
+                    onChange={(event) => setPromoCode(event.target.value)}
+                    placeholder="Введите промокод"
+                    className="rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-base text-white outline-none transition focus:border-primary focus:bg-white/[0.12]"
+                  />
+                </label>
                     {submitError ? <p className="text-sm text-red-400">{submitError}</p> : null}
                     <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                       <Button

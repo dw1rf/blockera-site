@@ -38,7 +38,7 @@ describe("orders flow", () => {
 
     const createResponse = await createOrder(
       jsonRequest("http://localhost/api/orders", "POST", {
-        email: "player@example.com",
+        email: "steve@gmail.com",
         nickname: "PlayerOne",
         productId: product!.id
       })
@@ -47,7 +47,7 @@ describe("orders flow", () => {
     expect(createResponse.status).toBe(201);
     const order = (await createResponse.json()) as { id: string };
 
-    const user = await prisma.user.findUnique({ where: { email: "player@example.com" } });
+    const user = await prisma.user.findUnique({ where: { email: "steve@gmail.com" } });
     expect(user?.role).toBe("USER");
 
     const audit = await prisma.auditLog.findMany();

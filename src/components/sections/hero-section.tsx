@@ -7,42 +7,41 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const HERO_TEXT = {
-  badge: "Сервер выживания Minecraft",
-  heading:
-    " Blockera — приключение, которое не становится рутиной",
+  badge: "Поддержи Minecraft‑сервер",
+  heading: "Blockera — пространство честной игры без Pay‑to‑Win",
   description:
-    " Исследуйте выживание с честным балансом, сезонными событиями без pay‑to‑win. Собирайте друзей, стройте базы и побеждайте в соревновательных активностях.",
-  donateLink: "Перейти в магазин",
+    "Мы создаём уютный сервер с экономикой, ивентами и активным сообществом. Поддержка донатом помогает оплачивать хостинг и запускать новые активности.",
+  donateLink: "Выбрать привилегию",
   statsTitleVersion: "Версия Java",
-  statsTitlePlayers: " Вместимость",
-  statsTitleCommunity: "Сообщество",
-  statsValueVersion: "1.20.x",
-  statsValuePlayers: "500 онлайн",
+  statsTitlePlayers: "Онлайн",
+  statsTitleCommunity: "Комьюнити",
+  statsValueVersion: "от 1.20.4",
+  statsValuePlayers: "500 игроков",
   statsValueCommunity: "discord.gg/c5xAPdHhZW",
-  reasonsTitle: "Почему игроки остаются",
-  quickFactsTitle: "Коротко о главном",
+  reasonsTitle: "Почему выбирают Blockera",
+  quickFactsTitle: "Коротко о сервере",
   quickFacts: [
-    "Выделенный хостинг в Европе.",
-    "Ежедневные бэкапы и защита от гриферов.",
-    "Ответ поддержки до 10 минут."
+    "Актуальные режимы Survival и Creative.",
+    "Регулярные ивенты и ручная модерация.",
+    "Прозрачный донат без Pay‑to‑Win."
   ]
 } as const;
 
 const heroHighlights = [
-{
+  {
     icon: <SparklesIcon className="h-5 w-5" />,
-    title: "Сезонные события",
-    description: "Еженедельные квесты и дропы от команды гейм-дизайна."
+    title: "Атмосфера",
+    description: "Интересные активности, красивая карта и забота о деталях оформления."
   },
   {
     icon: <ShieldIcon className="h-5 w-5" />,
     title: "Честная игра",
-    description: "Правила сервера и античит держат PvP честным 24/7."
+    description: "Модерация следит за читерами и нарушениями правил круглосуточно."
   },
   {
     icon: <UsersIcon className="h-5 w-5" />,
-    title: "Активное сообщество",
-    description: "Отзывчивая команда и живой Discord — легко собрать пати."
+    title: "Сообщество",
+    description: "Дружелюбный Discord, где легко найти команду и получить помощь."
   }
 ] as const;
 
@@ -120,3 +119,5 @@ export function HeroSection() {
     </section>
   );
 }
+
+

@@ -46,8 +46,22 @@ model Order {
   nickname   String
   status     String   @default("PENDING")
   payment    Payment?
+  promoCodeInput String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  discountPercent Int
+  expiresAt       DateTime
+  issuedForEmail  String
+  issuedForUserId String?
+  issuedForOrderId String?
+  used            Boolean  @default(false)
+  usedAt          DateTime?
+  createdAt       DateTime @default(now())
 }
 
 model Payment {
@@ -72,3 +86,5 @@ model AuditLog {
   metadata  String?
   createdAt DateTime @default(now())
 }
+
+

@@ -1,21 +1,21 @@
 ﻿const steps = [
   {
     number: "01",
-    title: "Обнови Minecraft до 1.20",
+    title: "Установите Minecraft 1.20.4",
     description:
-      "Скачай официальный лаунчер или TLauncher, выбери актуальную версию 1.20 и убедись, что установлены все необходимые файлы."
+      "Используйте официальный лаунчер, Modrinth или TLauncher, выберите версию от 1.20.4 и убедитесь, что игра запускается."
   },
   {
     number: "02",
-    title: "Добавь сервер в список",
+    title: "Подключитесь к серверу",
     description:
-      "Открой раздел многопользовательской игры и укажи адрес blockera.goida.host. Проверь стабильность пинга и сохрани сервер в избранное."
+      "Добавьте адрес blockera.goida.host в список серверов и подключайтесь. Белый список не требуется."
   },
   {
     number: "03",
-    title: "Войди и начинай приключение",
+    title: "Получите бонусы",
     description:
-      "Запускайся, знакомься с хабом и следуй подсказкам модераторов. Активируй стартовый набор и присоединяйся к ивентам."
+      "Играйте, участвуйте в ивентах и поддерживайте сервер донатом — так вы открываете новые возможности."
   }
 ];
 
@@ -23,14 +23,12 @@ export function HowToStartSection() {
   return (
     <section id="how-to-start" className="relative mx-auto max-w-6xl px-6 py-24">
       <div className="mx-auto flex max-w-3xl flex-col gap-4 text-center">
-        <span className="text-xs uppercase tracking-[0.4em] text-primary">
-          Как начать играть
-        </span>
+        <span className="text-xs uppercase tracking-[0.4em] text-primary">Как начать</span>
         <h2 className="text-balance text-3xl font-semibold uppercase tracking-[0.2em] text-white md:text-4xl">
-          Подключайся за пару шагов
+          Первые шаги на сервере
         </h2>
         <p className="text-base text-white/70">
-          Собрали короткий чек-лист, чтобы ты не потерялся в настройках. Возьми актуальную версию клиента, добавь наш сервер и залетай в блокерское приключение.
+          Всё просто: скачайте игру, добавьте наш адрес и зайдите. Ниже — краткая инструкция для новых игроков.
         </p>
       </div>
 

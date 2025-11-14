@@ -1,4 +1,4 @@
-﻿export type ProductCategory = "privilege" | "case" | "booster" | "cosmetic";
+export type ProductCategory = "privilege" | "case" | "booster" | "cosmetic";
 
 export interface Product {
   id: string;
@@ -17,7 +17,7 @@ export const products: Product[] = [
   {
     id: "creative",
     name: "Креатив",
-    description: "Свобода создания и выживания.",
+    description: "Свобода строительства и выживания без ограничений.",
     commands:
       "/gm или /gamemode 1; /back; до 5 домов — /sethome <имя> / /home <имя>; /me <сообщение>; /jobs; /chatcolor gui.",
     category: "privilege",
@@ -28,8 +28,9 @@ export const products: Product[] = [
   {
     id: "admin",
     name: "Админ",
-    description: "Полный контроль над сервером.",
-    commands: "/kick <игрок>; /mute <игрок> / /unmute <игрок>; /mutechat / /unmutechat; /tp <игрок>; до 7 домов — /sethome <имя> / /home <имя>.",
+    description: "Полный контроль над сервером и мгновенная модерация.",
+    commands:
+      "/kick <игрок>; /mute <игрок> / /unmute <игрок>; /mutechat / /unmutechat; /tp <игрок>; до 7 домов — /sethome <имя> / /home <имя>.",
     category: "privilege",
     price: 549,
     regionLimit: 300_000,
@@ -38,7 +39,7 @@ export const products: Product[] = [
   {
     id: "moderator",
     name: "Модератор",
-    description: "Поддержание порядка на сервере.",
+    description: "Роль для поддержания порядка и помощи игрокам.",
     commands: "/jail <игрок> / /unjail <игрок>; /nick <ник>; до 10 домов — /sethome.",
     category: "privilege",
     price: 499,
@@ -48,7 +49,7 @@ export const products: Product[] = [
   {
     id: "soul",
     name: "Soul",
-    description: "Расширенные возможности модерации.",
+    description: "Расширенные возможности модерации и помощи игрокам.",
     commands: "/ban <игрок> / /unban <игрок>; /fly <игрок>; /heal; до 12 домов — /sethome <имя> / /home <имя>.",
     category: "privilege",
     price: 699,
@@ -58,7 +59,7 @@ export const products: Product[] = [
   {
     id: "platinum",
     name: "Platinum",
-    description: "Расширенный креативный инструмент.",
+    description: "Расширенный креативный инструмент и WorldEdit‑команды.",
     commands:
       "/speed [уровень]; /undo; /navigate; базовое редактирование регионов — /set / /expand; rg flag: block-break / block-place / PvP / item-drop.",
     category: "privilege",
@@ -69,40 +70,40 @@ export const products: Product[] = [
   {
     id: "legend",
     name: "Legend",
-    description: "Легендарный статус и управление погодой.",
+    description: "Легендарный статус и расширенные настройки мира.",
     commands: "/time <день|ночь|число>; /jobs (до 7 профессий); /snow / /thaw; /wg teleport own; /wg priority.",
     category: "privilege",
-    price: 1149,
+    price: 1_149,
     regionLimit: 1_000_000,
     easyDonateProductId: "1030974"
   },
   {
     id: "immortal",
     name: "Immortal",
-    description: "Бессмертная мощь для строителей и модераторов.",
+    description: "Максимальная мощь и полный доступ к инструментам редактирования.",
     commands: "/kill <игрок>; /clearzone; /tphere <игрок>; полный доступ к кистям — /brush.*; /removebelow / /removenear.",
     category: "privilege",
-    price: 2149,
+    price: 2_149,
     regionLimit: 2_000_000,
     easyDonateProductId: "1030975"
   },
   {
     id: "shine",
     name: "Shine",
-    description: "Сияющая сила для продвинутых строителей.",
+    description: "Сияющая сила для тех, кто строит масштабные проекты.",
     commands: "//cylinder; //sphere; //line; /wg teleport.",
     category: "privilege",
-    price: 4599,
+    price: 4_599,
     regionLimit: 2_500_000,
     easyDonateProductId: "1030976"
   },
   {
     id: "ethereal",
     name: "Ethereal",
-    description: "Высшая форма власти и полный набор инструментов WorldEdit.",
+    description: "Высшая форма власти и полный доступ к WorldEdit инструментам.",
     commands: "/chatcolor change <цвет>; доступ к copy, paste, rotate; /delchunks; /jobs (до 10 профессий).",
     category: "privilege",
-    price: 8190,
+    price: 8_190,
     regionLimit: 5_000_000,
     easyDonateProductId: "1030978"
   }
