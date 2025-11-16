@@ -62,10 +62,16 @@ export async function POST(request: Request) {
     });
   }
 
+  const selectedEasyDonateProductId = surchargeDiscount?.discountProductId ?? product.easyDonateProductId;
+  if (!selectedEasyDonateProductId) {
+    console.error("[orders] Missing EasyDonate product ID for payment");
+    return NextResponse.json({ message: "Товар пока нельзя оплатить через сайт. Напишите поддержке." }, { status: 400 });
+  }
+
   const params = new URLSearchParams({
     customer: nickname,
     server_id: String(Math.round(resolvedServerId)),
-    products: JSON.stringify({ [product.easyDonateProductId]: 1 }),
+    products: JSON.stringify({ [selectedEasyDonateProductId]: 1 }),
     email
   });
 
@@ -111,6 +117,8 @@ export async function POST(request: Request) {
 
     const percentDiscount = Math.min(Math.max(appliedCoupon.discountPercent, 0), 100);
     couponDiscountAmount = Math.floor((subtotalAfterSurcharge * percentDiscount) / 100);
+
+    params.set("coupon", normalizedPromoCode);
   }
 
   const expectedCost = Math.max(subtotalAfterSurcharge - couponDiscountAmount, 0);

@@ -14,6 +14,7 @@ interface SurchargeApiResponse {
 
 export interface SurchargeDiscount {
   amount: number;
+  discountProductId?: string | null;
   targetProductId?: string | null;
 }
 
@@ -58,6 +59,11 @@ export async function fetchSurchargeDiscount({
     }
 
     const normalizedDiscount = Math.round(discountValue);
+    const discountProductId =
+      typeof (payload.response as { id?: string | number }).id === "number" ||
+      typeof (payload.response as { id?: string | number }).id === "string"
+        ? String((payload.response as { id?: string | number }).id)
+        : null;
     const targetProductId =
       typeof payload.response.target?.id === "number" || typeof payload.response.target?.id === "string"
         ? String(payload.response.target.id)
@@ -65,6 +71,7 @@ export async function fetchSurchargeDiscount({
 
     return {
       amount: normalizedDiscount,
+      discountProductId,
       targetProductId
     };
   } catch (error) {
