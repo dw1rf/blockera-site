@@ -47,10 +47,10 @@ const heroHighlights = [
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-midnight-light/30">
+    <section className="relative overflow-hidden bg-midnight-light/10">
       <div className="pointer-events-none absolute inset-0">
-        <Image src="/images/hero-bg.svg" alt="" fill priority className="object-cover opacity-60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-midnight/10 via-midnight/80 to-midnight" />
+        <Image src="/images/hero-bg.svg" alt="" fill priority className="object-cover opacity-30 md:opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-midnight/5 via-midnight/40 to-midnight md:via-midnight/70" />
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 pb-24 pt-28 md:grid-cols-[minmax(0,1fr)_400px] md:pb-32 md:pt-32">
@@ -119,5 +119,4 @@ export function HeroSection() {
     </section>
   );
 }
-
 

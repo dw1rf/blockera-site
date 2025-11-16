@@ -33,7 +33,11 @@ const TEXT = {
   nicknamePlaceholder: "Введите ник",
   cancel: "Отмена",
   continue: "Продолжить",
-  closeButton: "Закрыть"
+  closeButton: "Закрыть",
+
+  payableLabel: "К оплате",
+
+  discountLabel: "Скидка за уже купленные функции"
 };
 
 const AGREEMENTS = [
@@ -61,6 +65,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+  const [payableAmount, setPayableAmount] = useState<number | null>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -119,6 +125,8 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsSubmitted(false);
     setSubmitError(null);
     setSubmitLoading(false);
+    setPayableAmount(null);
+    setAppliedDiscount(null);
     setAgreements({ terms: false, refund: false, privacy: false });
   };
 
@@ -135,6 +143,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
     setSubmitLoading(true);
     setSubmitError(null);
+    setPayableAmount(null);
+    setAppliedDiscount(null);
 
     const response = await fetch("/api/orders", {
       method: "POST",
@@ -154,7 +164,13 @@ export function ProductCard({ product }: ProductCardProps) {
       setSubmitError(body.message ?? "РќРµ СѓРґР°Р»РѕСЃСЊ РѕС„РѕСЂРјРёС‚СЊ Р·Р°РєР°Р·.");
       return;
     }
-    const body = (await response.json().catch(() => ({}))) as { paymentUrl?: string };
+    const body = (await response.json().catch(() => ({}))) as {
+      paymentUrl?: string;
+      payableAmount?: number;
+      discount?: number;
+    };
+    setPayableAmount(typeof body?.payableAmount === "number" ? body.payableAmount : null);
+    setAppliedDiscount(typeof body?.discount === "number" ? body.discount : null);
     if (body?.paymentUrl) {
       setPaymentUrl(body.paymentUrl);
       setIsSubmitted(true);
@@ -348,6 +364,16 @@ export function ProductCard({ product }: ProductCardProps) {
                       <span className="font-semibold text-white">{nickname}</span>
                       {TEXT.successSuffix}
                     </div>
+                    {typeof payableAmount === "number" ? (
+                      <p className="text-base text-white">
+                        {TEXT.payableLabel}: <span className="font-semibold">{formatCurrency(payableAmount)}</span>
+                      </p>
+                    ) : null}
+                    {typeof appliedDiscount === "number" && appliedDiscount > 0 ? (
+                      <p className="text-sm text-white/80">
+                        {TEXT.discountLabel}: {formatCurrency(appliedDiscount)}
+                      </p>
+                    ) : null}
                     {paymentUrl ? (
                       <a
                         href={paymentUrl}

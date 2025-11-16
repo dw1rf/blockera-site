@@ -1,10 +1,11 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 
+import { cancelExpiredOrders } from "@/lib/order-utils";
 import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
-import { cancelExpiredOrders } from "@/lib/order-utils";
-import { issueThankYouCoupon } from "@/lib/coupons";
+import { fetchSurchargeDiscount, type SurchargeDiscount } from "@/lib/surcharge";
+import type { Coupon } from "@prisma/client";
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -46,7 +47,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Товар временно недоступен. Попробуйте позже." }, { status: 500 });
   }
 
-  const email = data.email.toLowerCase();
+  const email = data.email.trim().toLowerCase();
+  const nickname = data.nickname.trim();
   let user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
   }
 
   const params = new URLSearchParams({
-    customer: data.nickname.trim(),
+    customer: nickname,
     server_id: String(Math.round(resolvedServerId)),
     products: JSON.stringify({ [product.easyDonateProductId]: 1 }),
     email
@@ -73,7 +75,47 @@ export async function POST(request: Request) {
 
   let paymentUrl: string | null = null;
   let externalPaymentId: string | null = null;
-  let externalCost: number = product.price;
+
+  let surchargeDiscount: SurchargeDiscount | null = null;
+  if (product.category === "privilege" && product.easyDonateProductId) {
+    surchargeDiscount = await fetchSurchargeDiscount({
+      shopKey,
+      username: nickname,
+      productId: product.easyDonateProductId
+    });
+  }
+
+  const appliedSurcharge = surchargeDiscount ? Math.min(surchargeDiscount.amount, product.price) : 0;
+  const subtotalAfterSurcharge = Math.max(product.price - appliedSurcharge, 0);
+
+  let appliedCoupon: Coupon | null = null;
+  let couponDiscountAmount = 0;
+  let normalizedPromoCode: string | null = null;
+
+  if (typeof data.promoCode === "string" && data.promoCode.trim().length > 0) {
+    normalizedPromoCode = data.promoCode.trim().toUpperCase();
+    appliedCoupon = await prisma.coupon.findUnique({ where: { code: normalizedPromoCode } });
+
+    if (!appliedCoupon) {
+      return NextResponse.json({ message: "Промокод не найден" }, { status: 400 });
+    }
+    if (appliedCoupon.used) {
+      return NextResponse.json({ message: "Промокод уже использован" }, { status: 400 });
+    }
+    if (appliedCoupon.expiresAt <= new Date()) {
+      return NextResponse.json({ message: "Срок действия промокода истёк" }, { status: 400 });
+    }
+    if (appliedCoupon.issuedForEmail && appliedCoupon.issuedForEmail !== email) {
+      return NextResponse.json({ message: "Промокод привязан к другому адресу" }, { status: 400 });
+    }
+
+    const percentDiscount = Math.min(Math.max(appliedCoupon.discountPercent, 0), 100);
+    couponDiscountAmount = Math.floor((subtotalAfterSurcharge * percentDiscount) / 100);
+  }
+
+  const expectedCost = Math.max(subtotalAfterSurcharge - couponDiscountAmount, 0);
+
+  let externalCost: number = expectedCost;
 
   try {
     const easydonateResponse = await fetch(`https://easydonate.ru/api/v3/shop/payment/create?${params.toString()}`, {
@@ -125,9 +167,9 @@ export async function POST(request: Request) {
       data: {
         userId: user!.id,
         productId: product.id,
-        nickname: data.nickname,
+        nickname,
         status: "PENDING",
-        promoCodeInput: typeof data.promoCode === "string" && data.promoCode.trim().length > 0 ? data.promoCode.trim() : null
+        promoCodeInput: normalizedPromoCode
       },
       include: {
         product: true
@@ -148,6 +190,8 @@ export async function POST(request: Request) {
     return createdOrder;
   });
 
+  const totalDiscount = product.price > externalCost ? product.price - externalCost : 0;
+
   await writeAuditLog({
     userId: user.id,
     action: "ORDER_CREATE_PUBLIC",
@@ -157,19 +201,22 @@ export async function POST(request: Request) {
       productId: product.id,
       price: product.price,
       paymentProvider: "EASYDONATE",
-      externalPaymentId
+      payableAmount: externalCost,
+      externalPaymentId,
+      surchargeDiscount: appliedSurcharge > 0 ? appliedSurcharge : undefined,
+      requestedSurchargeDiscount: surchargeDiscount?.amount ?? undefined,
+      surchargeTargetProductId: surchargeDiscount?.targetProductId ?? undefined,
+      promoCode: normalizedPromoCode ?? undefined,
+      couponDiscountAmount: couponDiscountAmount > 0 ? couponDiscountAmount : undefined
     }
   });
 
-  try {
-    await issueThankYouCoupon({
-      email,
-      userId: user.id,
-      orderId: order.id
-    });
-  } catch (error) {
-    console.error("[orders] Failed to issue coupon", error);
-  }
-
-  return NextResponse.json({ paymentUrl }, { status: 201 });
+  return NextResponse.json(
+    {
+      paymentUrl,
+      payableAmount: externalCost,
+      discount: totalDiscount
+    },
+    { status: 201 }
+  );
 }

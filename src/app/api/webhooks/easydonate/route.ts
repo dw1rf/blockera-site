@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 
 import { writeAuditLog } from "@/lib/audit";
+import { issueThankYouCoupon } from "@/lib/coupons";
 import { prisma } from "@/lib/prisma";
 
 function isValidString(value: unknown): value is string {
@@ -60,7 +61,12 @@ export async function POST(request: Request) {
     where: { externalId: externalPaymentId },
     include: {
       order: {
-        select: { id: true, userId: true }
+        select: {
+          id: true,
+          userId: true,
+          promoCodeInput: true,
+          user: { select: { email: true } }
+        }
       }
     }
   });
@@ -100,6 +106,35 @@ export async function POST(request: Request) {
       amount
     }
   });
+
+  if (paymentRecord.order.promoCodeInput) {
+    await prisma.coupon.updateMany({
+      where: {
+        code: paymentRecord.order.promoCodeInput,
+        used: false
+      },
+      data: {
+        used: true,
+        usedAt: new Date()
+      }
+    });
+  }
+
+  const couponAlreadyIssued = await prisma.coupon.findFirst({
+    where: { issuedForOrderId: paymentRecord.order.id }
+  });
+
+  if (!couponAlreadyIssued && paymentRecord.order.user?.email) {
+    try {
+      await issueThankYouCoupon({
+        email: paymentRecord.order.user.email,
+        userId: paymentRecord.order.userId,
+        orderId: paymentRecord.order.id
+      });
+    } catch (error) {
+      console.error("[webhook] Failed to issue thank-you coupon", error);
+    }
+  }
 
   return NextResponse.json({ success: true });
 }

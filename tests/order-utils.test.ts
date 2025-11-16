@@ -1,4 +1,6 @@
-﻿import { describe, expect, it, beforeEach } from "vitest";
+import { randomUUID } from "node:crypto";
+
+import { describe, expect, it, beforeEach } from "vitest";
 
 import { prisma } from "@/lib/prisma";
 import { seedProductsIfEmpty } from "@/lib/product-seed";
@@ -12,7 +14,7 @@ const createOrder = async (status: "PENDING" | "COMPLETED" | "FAILED" | "CANCELL
 
   const user = await prisma.user.create({
     data: {
-      email: `${status}-${minutesAgo}@example.com`,
+      email: `${status}-${minutesAgo}-${randomUUID()}@example.com`,
       hashedPassword: "hashed",
       role: "USER"
     }
