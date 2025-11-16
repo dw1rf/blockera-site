@@ -11,6 +11,8 @@ const allowedAdminEmails = (process.env.SEED_ADMIN_EMAILS ?? process.env.ALLOWED
   .filter(Boolean);
 
 const defaultAdminPassword = process.env.SEED_ADMIN_PASSWORD ?? "admin123";
+const sessionMaxAge = 60 * 60 * 24 * 30;
+const sessionUpdateAge = 60 * 60 * 24;
 const secureCookies = process.env.NEXTAUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production";
 const cookiePrefix = secureCookies ? "__Secure-" : "";
 const cookieDomain = process.env.NEXTAUTH_COOKIE_DOMAIN?.trim();
@@ -23,7 +25,12 @@ const baseCookieOptions = {
 
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: sessionMaxAge,
+    updateAge: sessionUpdateAge
+  },
+  jwt: {
+    maxAge: sessionMaxAge
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
@@ -34,21 +41,24 @@ export const authOptions: NextAuthOptions = {
       name: `${cookiePrefix}next-auth.session-token`,
       options: {
         ...baseCookieOptions,
-        httpOnly: true
+        httpOnly: true,
+        maxAge: sessionMaxAge
       }
     },
     callbackUrl: {
       name: `${cookiePrefix}next-auth.callback-url`,
       options: {
         ...baseCookieOptions,
-        httpOnly: false
+        httpOnly: false,
+        maxAge: sessionMaxAge
       }
     },
     csrfToken: {
       name: `${cookiePrefix}next-auth.csrf-token`,
       options: {
         ...baseCookieOptions,
-        httpOnly: false
+        httpOnly: false,
+        maxAge: sessionMaxAge
       }
     }
   },
