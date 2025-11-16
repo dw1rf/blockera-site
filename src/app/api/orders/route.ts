@@ -118,7 +118,9 @@ export async function POST(request: Request) {
     const percentDiscount = Math.min(Math.max(appliedCoupon.discountPercent, 0), 100);
     couponDiscountAmount = Math.floor((subtotalAfterSurcharge * percentDiscount) / 100);
 
-    params.set("coupon", normalizedPromoCode);
+    if (normalizedPromoCode) {
+      params.set("coupon", normalizedPromoCode);
+    }
   }
 
   const expectedCost = Math.max(subtotalAfterSurcharge - couponDiscountAmount, 0);
