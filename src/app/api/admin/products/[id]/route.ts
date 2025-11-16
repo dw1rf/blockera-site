@@ -77,6 +77,15 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     updates.easyDonateServerId = null;
   }
 
+  if (typeof data.privilegeRank === "number") {
+    if (!Number.isFinite(data.privilegeRank) || data.privilegeRank <= 0) {
+      return NextResponse.json({ message: "Некорректный порядковый номер привилегии" }, { status: 400 });
+    }
+    updates.privilegeRank = Math.round(data.privilegeRank);
+  } else if (data.privilegeRank === null) {
+    updates.privilegeRank = null;
+  }
+
   if (typeof data.status === "string") {
     if (!STATUS_VALUES.includes(data.status)) {
       return NextResponse.json({ message: "Некорректный статус" }, { status: 400 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -43,6 +43,7 @@ interface Product {
   price: number;
   category: CategoryValue;
   status: StatusValue;
+  privilegeRank?: number | null;
   highlight?: string | null;
   commands?: string | null;
   regionLimit?: number | null;
@@ -101,6 +102,70 @@ export function ProductManager({ initialProducts }: Props) {
   const [loading, setLoading] = useState(false);
   const [editLoadingId, setEditLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rankEdits, setRankEdits] = useState<Record<string, string>>({});
+  const [rankError, setRankError] = useState<string | null>(null);
+  const [rankSavingId, setRankSavingId] = useState<string | null>(null);
+
+  const sortedPrivilegeProducts = useMemo(() => {
+    const privilegeProducts = products.filter((product) => product.category === "privilege");
+    return privilegeProducts.sort((a, b) => {
+      const aRank = typeof a.privilegeRank === "number" ? a.privilegeRank : Number.POSITIVE_INFINITY;
+      const bRank = typeof b.privilegeRank === "number" ? b.privilegeRank : Number.POSITIVE_INFINITY;
+      if (aRank === bRank) {
+        return a.name.localeCompare(b.name, "ru");
+      }
+      return aRank - bRank;
+    });
+  }, [products]);
+
+  const handleRankInputChange = (productId: string, value: string) => {
+    if (!/^\d*$/.test(value.trim())) {
+      setRankError("РџРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рј С‡РёСЃР»РѕРј");
+    } else {
+      setRankError(null);
+    }
+    setRankEdits((prev) => ({ ...prev, [productId]: value }));
+  };
+
+  const handleRankSave = async (productId: string) => {
+    const rawValue = (rankEdits[productId] ?? "").trim();
+    const parsedValue = rawValue.length === 0 ? null : Number(rawValue);
+
+    if (parsedValue !== null && (!Number.isFinite(parsedValue) || parsedValue <= 0)) {
+      setRankError("РџРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рј С‡РёСЃР»РѕРј");
+      return;
+    }
+
+    setRankSavingId(productId);
+    setRankError(null);
+
+    try {
+      const response = await fetch(`/api/admin/products/${productId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ privilegeRank: parsedValue })
+      });
+
+      if (!response.ok) {
+        setRankError("РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РїРѕСЂСЏРґРѕРє");
+        return;
+      }
+
+      setProducts((prev) =>
+        prev.map((product) => (product.id === productId ? { ...product, privilegeRank: parsedValue } : product))
+      );
+      setRankEdits((prev) => {
+        const next = { ...prev };
+        delete next[productId];
+        return next;
+      });
+    } catch (updateError) {
+      console.error("[product-manager] Failed to update privilege rank", updateError);
+      setRankError("РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РїРѕСЂСЏРґРѕРє");
+    } finally {
+      setRankSavingId(null);
+    }
+  };
 
   const resetForm = () => setForm(createEmptyFormState());
   const resetEditForm = () => setEditForm(createEmptyEditState());
@@ -561,6 +626,57 @@ export function ProductManager({ initialProducts }: Props) {
           {products.length === 0 ? (
             <p className="text-sm text-white/40">РџРѕРєР° РЅРµС‚ С‚РѕРІР°СЂРѕРІ. Р”РѕР±Р°РІСЊС‚Рµ РїРµСЂРІС‹Р№ СЃ РїРѕРјРѕС‰СЊСЋ С„РѕСЂРјС‹ РІС‹С€Рµ.</p>
           ) : null}
+        </div>
+      </div>
+      <div className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-card backdrop-blur">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold uppercase tracking-[0.2em] text-white">Очередность привилегий</h2>
+            <p className="text-sm text-white/60">
+              Укажите порядок рангов. Игрок не сможет купить привилегию ниже текущей.
+            </p>
+          </div>
+        </div>
+        {rankError ? <p className="text-sm text-red-400">{rankError}</p> : null}
+        <div className="space-y-3">
+          {sortedPrivilegeProducts.length === 0 ? (
+            <p className="text-sm text-white/50">Привилегии пока не добавлены.</p>
+          ) : (
+            sortedPrivilegeProducts.map((product) => {
+              const value = rankEdits[product.id] ?? (product.privilegeRank?.toString() ?? "");
+              return (
+                <div
+                  key={`rank-${product.id}`}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 p-4"
+                >
+                  <div>
+                    <p className="text-white text-lg font-semibold">{product.name}</p>
+                    <p className="text-xs text-white/50">
+                      Текущий номер: {product.privilegeRank ?? "не задан"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={1}
+                      value={value}
+                      onChange={(event) => handleRankInputChange(product.id, event.target.value)}
+                      placeholder="Номер"
+                      className="w-28 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-2 text-sm text-white outline-none focus:border-primary"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={rankSavingId === product.id}
+                      onClick={() => handleRankSave(product.id)}
+                      className="bg-gradient-to-r from-primary to-purple-500"
+                    >
+                      {rankSavingId === product.id ? "Сохраняю..." : "Сохранить"}
+                    </Button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

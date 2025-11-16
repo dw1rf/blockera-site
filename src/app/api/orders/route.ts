@@ -62,6 +62,64 @@ export async function POST(request: Request) {
     });
   }
 
+  if (product.category === "privilege") {
+    const completedPrivileges = await prisma.order.findMany({
+      where: {
+        nickname,
+        status: "COMPLETED",
+        product: { category: "privilege" }
+      },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            privilegeRank: true
+          }
+        }
+      }
+    });
+
+    const duplicatePrivilege = completedPrivileges.find((order) => order.productId === product.id);
+    if (duplicatePrivilege) {
+      return NextResponse.json({ message: "Этот ник уже обладает этой привилегией" }, { status: 400 });
+    }
+
+    const targetRank = typeof product.privilegeRank === "number" ? product.privilegeRank : null;
+    if (targetRank !== null) {
+      let highestPrivilege = completedPrivileges.reduce<
+        (typeof completedPrivileges)[number] | null
+      >((best, current) => {
+        const currentRank = current.product?.privilegeRank ?? null;
+        if (typeof currentRank !== "number") {
+          return best;
+        }
+        if (!best) {
+          return current;
+        }
+        const bestRank = best.product?.privilegeRank ?? null;
+        if (typeof bestRank !== "number" || currentRank > bestRank) {
+          return current;
+        }
+        return best;
+      }, null);
+
+      if (
+        highestPrivilege &&
+        typeof highestPrivilege.product?.privilegeRank === "number" &&
+        highestPrivilege.product.privilegeRank >= targetRank
+      ) {
+        const currentName = highestPrivilege.product.name ?? "другая привилегия";
+        return NextResponse.json(
+          {
+            message: `Нельзя купить привилегию ниже текущей (${currentName})`
+          },
+          { status: 400 }
+        );
+      }
+    }
+  }
+
   let surchargeDiscount: SurchargeDiscount | null = null;
   if (product.category === "privilege" && product.easyDonateProductId) {
     surchargeDiscount = await fetchSurchargeDiscount({

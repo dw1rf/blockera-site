@@ -116,4 +116,90 @@ describe("orders flow", () => {
     const updatedOrder = await prisma.order.findUnique({ where: { id: storedOrder.id } });
     expect(updatedOrder?.status).toBe("COMPLETED");
   });
+
+  it("prevents purchasing the same privilege twice for the same nickname", async () => {
+    await seedProductsIfEmpty();
+    const product = await prisma.product.findFirstOrThrow({ where: { status: "ACTIVE" } });
+
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ success: true, response: { discount: 0 } }), { status: 200 })
+    );
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          response: {
+            url: "https://pay.easydonate.test/DUPLICATE",
+            payment: { id: "payment-duplicate", cost: product.price }
+          }
+        }),
+        { status: 200 }
+      )
+    );
+
+    const payload = {
+      email: "player@example.com",
+      nickname: "SameNick",
+      productId: product.id
+    };
+
+    const firstOrderResponse = await createOrder(jsonRequest("http://localhost/api/orders", "POST", payload));
+    expect(firstOrderResponse.status).toBe(201);
+
+    const storedOrder = await prisma.order.findFirstOrThrow({ where: { nickname: payload.nickname } });
+    await prisma.order.update({
+      where: { id: storedOrder.id },
+      data: { status: "COMPLETED" }
+    });
+
+    const secondOrderResponse = await createOrder(jsonRequest("http://localhost/api/orders", "POST", payload));
+    expect(secondOrderResponse.status).toBe(400);
+    const errorBody = (await secondOrderResponse.json()) as { message?: string };
+    expect(errorBody.message).toBe("Этот ник уже обладает этой привилегией");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("prevents buying a lower-ranked privilege", async () => {
+    await seedProductsIfEmpty();
+    const higherPrivilege = await prisma.product.findFirstOrThrow({ where: { id: "soul" } });
+    const lowerPrivilege = await prisma.product.findFirstOrThrow({ where: { id: "moderator" } });
+
+    expect(higherPrivilege.privilegeRank).toBeGreaterThan(lowerPrivilege.privilegeRank ?? 0);
+
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ success: true, response: { discount: 0 } }), { status: 200 })
+    );
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          success: true,
+          response: {
+            url: "https://pay.easydonate.test/HIGH",
+            payment: { id: "payment-high", cost: higherPrivilege.price }
+          }
+        }),
+        { status: 200 }
+      )
+    );
+
+    const primaryPayload = {
+      email: "player2@example.com",
+      nickname: "RankedPlayer",
+      productId: higherPrivilege.id
+    };
+
+    const highResponse = await createOrder(jsonRequest("http://localhost/api/orders", "POST", primaryPayload));
+    expect(highResponse.status).toBe(201);
+
+    const stored = await prisma.order.findFirstOrThrow({ where: { productId: higherPrivilege.id } });
+    await prisma.order.update({ where: { id: stored.id }, data: { status: "COMPLETED" } });
+
+    const downgradePayload = { ...primaryPayload, productId: lowerPrivilege.id };
+    const downgradeResponse = await createOrder(jsonRequest("http://localhost/api/orders", "POST", downgradePayload));
+    expect(downgradeResponse.status).toBe(400);
+    const downgradeBody = (await downgradeResponse.json()) as { message?: string };
+    expect(downgradeBody.message?.toLowerCase()).toContain("нельзя купить привилегию ниже текущей");
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });

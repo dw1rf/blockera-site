@@ -29,6 +29,7 @@ const buildProductPayload = (product: (typeof staticProducts)[number]) => ({
   description: product.description,
   price: product.price,
   category: product.category,
+  privilegeRank: typeof product.privilegeRank === "number" ? product.privilegeRank : null,
   highlight: product.highlight ?? null,
   commands: product.commands ?? null,
   regionLimit: typeof product.regionLimit === "number" ? product.regionLimit : null,
@@ -45,7 +46,8 @@ async function syncExistingMappings() {
           where: { id: product.id },
           data: {
             easyDonateProductId: product.easyDonateProductId ?? null,
-            easyDonateServerId: toNullableNumber(product.easyDonateServerId)
+            easyDonateServerId: toNullableNumber(product.easyDonateServerId),
+            privilegeRank: typeof product.privilegeRank === "number" ? product.privilegeRank : null
           }
         })
         .catch((error) => {

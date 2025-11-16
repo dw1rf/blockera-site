@@ -87,6 +87,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Некорректный ID сервера EasyDonate" }, { status: 400 });
   }
 
+  let privilegeRank: number | null = null;
+  if (typeof data.privilegeRank === "number") {
+    if (!Number.isFinite(data.privilegeRank) || data.privilegeRank <= 0) {
+      return NextResponse.json({ message: "Некорректный порядковый номер привилегии" }, { status: 400 });
+    }
+    privilegeRank = Math.round(data.privilegeRank);
+  } else if (data.privilegeRank !== undefined && data.privilegeRank !== null) {
+    return NextResponse.json({ message: "Некорректный порядковый номер привилегии" }, { status: 400 });
+  }
+
   const product = await prisma.product.create({
     data: {
       name: data.name.trim(),
@@ -101,6 +111,7 @@ export async function POST(request: Request) {
       regionLimit,
       easyDonateProductId,
       easyDonateServerId,
+      privilegeRank,
       status: data.status && STATUS_VALUES.includes(data.status) ? data.status : "ACTIVE"
     }
   });

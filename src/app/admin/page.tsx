@@ -66,7 +66,8 @@ export default async function AdminPage() {
             ...product,
             category: product.category as ProductManagerProduct["category"],
             status: product.status as ProductManagerProduct["status"],
-            createdAt: product.createdAt.toISOString()
+            createdAt: product.createdAt.toISOString(),
+            privilegeRank: product.privilegeRank ?? null
           }))}
         />
         <OrdersTable

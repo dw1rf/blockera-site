@@ -32,6 +32,7 @@ model Product {
   regionLimit Int?
   easyDonateProductId String?
   easyDonateServerId  Int?
+  privilegeRank Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]
