@@ -631,16 +631,16 @@ export function ProductManager({ initialProducts }: Props) {
       <div className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-card backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold uppercase tracking-[0.2em] text-white">Очередность привилегий</h2>
+            <h2 className="text-2xl font-semibold uppercase tracking-[0.2em] text-white"> </h2>
             <p className="text-sm text-white/60">
-              Укажите порядок рангов. Игрок не сможет купить привилегию ниже текущей.
+                .       .
             </p>
           </div>
         </div>
         {rankError ? <p className="text-sm text-red-400">{rankError}</p> : null}
         <div className="space-y-3">
           {sortedPrivilegeProducts.length === 0 ? (
-            <p className="text-sm text-white/50">Привилегии пока не добавлены.</p>
+            <p className="text-sm text-white/50">   .</p>
           ) : (
             sortedPrivilegeProducts.map((product) => {
               const value = rankEdits[product.id] ?? (product.privilegeRank?.toString() ?? "");
@@ -652,7 +652,7 @@ export function ProductManager({ initialProducts }: Props) {
                   <div>
                     <p className="text-white text-lg font-semibold">{product.name}</p>
                     <p className="text-xs text-white/50">
-                      Текущий номер: {product.privilegeRank ?? "не задан"}
+                       : {product.privilegeRank ?? " "}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -661,7 +661,7 @@ export function ProductManager({ initialProducts }: Props) {
                       min={1}
                       value={value}
                       onChange={(event) => handleRankInputChange(product.id, event.target.value)}
-                      placeholder="Номер"
+                      placeholder=""
                       className="w-28 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-2 text-sm text-white outline-none focus:border-primary"
                     />
                     <Button
@@ -670,7 +670,7 @@ export function ProductManager({ initialProducts }: Props) {
                       onClick={() => handleRankSave(product.id)}
                       className="bg-gradient-to-r from-primary to-purple-500"
                     >
-                      {rankSavingId === product.id ? "Сохраняю..." : "Сохранить"}
+                      {rankSavingId === product.id ? "..." : ""}
                     </Button>
                   </div>
                 </div>
