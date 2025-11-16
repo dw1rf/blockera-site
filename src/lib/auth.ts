@@ -11,6 +11,15 @@ const allowedAdminEmails = (process.env.SEED_ADMIN_EMAILS ?? process.env.ALLOWED
   .filter(Boolean);
 
 const defaultAdminPassword = process.env.SEED_ADMIN_PASSWORD ?? "admin123";
+const secureCookies = process.env.NEXTAUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production";
+const cookiePrefix = secureCookies ? "__Secure-" : "";
+const cookieDomain = process.env.NEXTAUTH_COOKIE_DOMAIN?.trim();
+const baseCookieOptions = {
+  path: "/",
+  sameSite: "lax" as const,
+  secure: secureCookies,
+  domain: cookieDomain && cookieDomain.length > 0 ? cookieDomain : undefined
+};
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -19,6 +28,29 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/auth/sign-in"
+  },
+  cookies: {
+    sessionToken: {
+      name: `${cookiePrefix}next-auth.session-token`,
+      options: {
+        ...baseCookieOptions,
+        httpOnly: true
+      }
+    },
+    callbackUrl: {
+      name: `${cookiePrefix}next-auth.callback-url`,
+      options: {
+        ...baseCookieOptions,
+        httpOnly: false
+      }
+    },
+    csrfToken: {
+      name: `${cookiePrefix}next-auth.csrf-token`,
+      options: {
+        ...baseCookieOptions,
+        httpOnly: false
+      }
+    }
   },
   providers: [
     CredentialsProvider({

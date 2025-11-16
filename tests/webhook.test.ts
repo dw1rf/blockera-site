@@ -84,6 +84,39 @@ describe("EasyDonate webhook", () => {
     expect(auditRecords.length).toBe(1);
   });
 
+  it("accepts urlencoded payloads from EasyDonate", async () => {
+    const { product, order, payment } = await createOrderWithPayment();
+
+    const formPayload = new URLSearchParams({
+      payment_id: payment.externalId!,
+      cost: product.price.toString(),
+      customer: order.nickname
+    });
+
+    const signature = createHmac("sha256", process.env.EASYDONATE_SHOP_KEY!)
+      .update(`${payment.externalId}@${product.price}@${order.nickname}`)
+      .digest("hex");
+
+    formPayload.set("signature", signature);
+
+    const response = await easyDonateWebhook(
+      new Request("http://localhost/api/webhooks/easydonate", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formPayload.toString()
+      })
+    );
+
+    expect(response.status).toBe(200);
+
+    const updatedPayment = await prisma.payment.findUnique({ where: { id: payment.id } });
+    expect(updatedPayment?.status).toBe("RECEIVED");
+    expect(updatedPayment?.amount).toBe(product.price);
+
+    const updatedOrder = await prisma.order.findUnique({ where: { id: order.id } });
+    expect(updatedOrder?.status).toBe("COMPLETED");
+  });
+
   it("rejects payloads with invalid signatures", async () => {
     const { order, payment } = await createOrderWithPayment();
 

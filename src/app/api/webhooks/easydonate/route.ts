@@ -10,6 +10,54 @@ function isValidString(value: unknown): value is string {
   return typeof value === "string" && value.length > 0;
 }
 
+type WebhookPayload = {
+  payment_id?: string | number;
+  cost?: string | number;
+  customer?: string;
+  signature?: string;
+  [key: string]: unknown;
+};
+
+function parseWebhookPayload(rawBody: string): WebhookPayload | null {
+  const trimmed = rawBody.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && typeof parsed === "object") {
+      return parsed as WebhookPayload;
+    }
+  } catch {
+    // Fall through to try parsing as form-encoded data.
+  }
+
+  const params = new URLSearchParams(trimmed);
+  if ([...params.keys()].length === 0) {
+    return null;
+  }
+
+  const nestedPayload = params.get("payload");
+  if (nestedPayload) {
+    try {
+      const parsed = JSON.parse(nestedPayload);
+      if (parsed && typeof parsed === "object") {
+        return parsed as WebhookPayload;
+      }
+    } catch {
+      // Ignore nested payload parsing issues and fall back to plain params.
+    }
+  }
+
+  const fallbackPayload: WebhookPayload = {};
+  params.forEach((value, key) => {
+    fallbackPayload[key] = value;
+  });
+
+  return Object.keys(fallbackPayload).length > 0 ? fallbackPayload : null;
+}
+
 export async function POST(request: Request) {
   const shopKey = process.env.EASYDONATE_SHOP_KEY;
   if (!shopKey) {
@@ -17,11 +65,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false }, { status: 500 });
   }
 
-  let payload: any;
-  try {
-    payload = await request.json();
-  } catch (error) {
-    console.error("[webhook] Failed to parse JSON", error);
+  const rawBody = await request.text();
+  const payload = parseWebhookPayload(rawBody);
+  if (!payload) {
+    console.error("[webhook] Failed to parse payload", rawBody);
     return NextResponse.json({ success: false }, { status: 400 });
   }
 
