@@ -94,7 +94,7 @@ export async function POST(request: Request) {
 
   if (typeof data.promoCode === "string" && data.promoCode.trim().length > 0) {
     normalizedPromoCode = data.promoCode.trim().toUpperCase();
-    appliedCoupon = await prisma.coupon.findUnique({ where: { code: normalizedPromoCode } });
+    appliedCoupon = await prisma.coupon.findUnique({ where: { code: normalizedPromoCode ?? undefined } });
 
     if (!appliedCoupon) {
       return NextResponse.json({ message: "Промокод не найден" }, { status: 400 });
