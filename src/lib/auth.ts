@@ -13,9 +13,12 @@ const allowedAdminEmails = (process.env.SEED_ADMIN_EMAILS ?? process.env.ALLOWED
 const defaultAdminPassword = process.env.SEED_ADMIN_PASSWORD ?? "admin123";
 const sessionMaxAge = 60 * 60 * 24 * 30;
 const sessionUpdateAge = 60 * 60 * 24;
-const secureCookies = process.env.NEXTAUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production";
+const secureCookies =
+  process.env.NODE_ENV === "production" &&
+  (process.env.NEXTAUTH_URL?.startsWith("https://") ?? true);
 const cookiePrefix = secureCookies ? "__Secure-" : "";
-const cookieDomain = process.env.NEXTAUTH_COOKIE_DOMAIN?.trim();
+const cookieDomain =
+  process.env.NODE_ENV === "production" ? process.env.NEXTAUTH_COOKIE_DOMAIN?.trim() : undefined;
 const baseCookieOptions = {
   path: "/",
   sameSite: "lax" as const,
