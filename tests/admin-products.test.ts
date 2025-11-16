@@ -1,3 +1,4 @@
+﻿import { randomUUID } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 
 import { prisma } from "@/lib/prisma";
@@ -5,11 +6,13 @@ import { prisma } from "@/lib/prisma";
 import { GET as listProducts, POST as createProduct } from "@/app/api/admin/products/route";
 import { DELETE as deleteProduct, PATCH as updateProduct } from "@/app/api/admin/products/[id]/route";
 
+const ensureAdminSessionMock = vi.hoisted(() => vi.fn());
+
 vi.mock("@/lib/auth-utils", async () => {
   const actual = await vi.importActual<typeof import("@/lib/auth-utils")>("@/lib/auth-utils");
   return {
     ...actual,
-    ensureAdminSession: vi.fn().mockResolvedValue({ user: { id: "admin-test-user" } })
+    ensureAdminSession: ensureAdminSessionMock
   };
 });
 
@@ -22,10 +25,13 @@ const jsonRequest = (url: string, method: string, body: unknown) =>
 
 describe("admin products API", () => {
   it("creates, updates and deletes a product", async () => {
+    const adminId = randomUUID();
+    ensureAdminSessionMock.mockResolvedValue({ user: { id: adminId } });
+
     await prisma.user.create({
       data: {
-        id: "admin-test-user",
-        email: "admin-test@example.com",
+        id: adminId,
+        email: `${adminId}@example.com`, 
         hashedPassword: "hashed-password",
         role: "ADMIN"
       }
@@ -73,3 +79,8 @@ describe("admin products API", () => {
     expect(auditRows).not.toHaveLength(0);
   });
 });
+
+
+
+
+

@@ -1,4 +1,4 @@
-﻿import { createHmac } from "node:crypto";
+﻿import { createHmac, randomUUID } from "node:crypto";
 
 import { describe, expect, it, beforeEach } from "vitest";
 
@@ -19,7 +19,7 @@ async function createOrderWithPayment() {
 
   const user = await prisma.user.create({
     data: {
-      email: "webhook-user@example.com",
+      email: `webhook-user-${randomUUID()}@example.com`,
       hashedPassword: "hashed-password",
       role: "USER"
     }
@@ -41,7 +41,7 @@ async function createOrderWithPayment() {
       amount: 0,
       currency: "RUB",
       status: "PENDING",
-      externalId: "ext-payment"
+      externalId: `ext-payment-${randomUUID()}`
     }
   });
 
@@ -138,3 +138,4 @@ describe("EasyDonate webhook", () => {
     expect(staleOrder?.status).toBe("PENDING");
   });
 });
+

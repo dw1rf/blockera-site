@@ -33,6 +33,16 @@ const createOrder = async (status: "PENDING" | "COMPLETED" | "FAILED" | "CANCELL
 
 describe("order utils", () => {
   beforeEach(async () => {
+    await prisma.$executeRawUnsafe(`
+      TRUNCATE TABLE
+        "Payment",
+        "Order",
+        "AuditLog",
+        "Coupon",
+        "Product",
+        "User"
+      RESTART IDENTITY CASCADE
+    `);
     await seedProductsIfEmpty();
   });
 

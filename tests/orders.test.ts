@@ -1,4 +1,5 @@
-﻿import { describe, expect, it, vi } from "vitest";
+﻿import { randomUUID } from "node:crypto";
+import { describe, expect, it, vi } from "vitest";
 
 import { prisma } from "@/lib/prisma";
 import { seedProductsIfEmpty } from "@/lib/product-seed";
@@ -6,11 +7,13 @@ import { seedProductsIfEmpty } from "@/lib/product-seed";
 import { PATCH as adminUpdateOrder } from "@/app/api/admin/orders/[id]/route";
 import { POST as createOrder } from "@/app/api/orders/route";
 
+const ensureAdminSessionMock = vi.hoisted(() => vi.fn());
+
 vi.mock("@/lib/auth-utils", async () => {
   const actual = await vi.importActual<typeof import("@/lib/auth-utils")>("@/lib/auth-utils");
   return {
     ...actual,
-    ensureAdminSession: vi.fn().mockResolvedValue({ user: { id: "admin-test-user" } })
+    ensureAdminSession: ensureAdminSessionMock
   };
 });
 
@@ -43,14 +46,20 @@ describe("orders flow", () => {
   });
 
   it("creates public order and allows admin status change", async () => {
+    const adminId = randomUUID();
+    ensureAdminSessionMock.mockResolvedValue({ user: { id: adminId } });
+
     await prisma.user.create({
       data: {
-        id: "admin-test-user",
-        email: "admin-test@example.com",
+        id: adminId,
+        email: `${adminId}@example.com`, 
         hashedPassword: "hashed-password",
         role: "ADMIN"
       }
     });
+
+    const playerEmail = `steve+${randomUUID()}@example.com`;
+    const playerNickname = `PlayerOne-${randomUUID()}`;
 
     await seedProductsIfEmpty();
     const product = await prisma.product.findFirst({ where: { status: "ACTIVE" } });
@@ -84,8 +93,8 @@ describe("orders flow", () => {
 
     const createResponse = await createOrder(
       jsonRequest("http://localhost/api/orders", "POST", {
-        email: "steve@gmail.com",
-        nickname: "PlayerOne",
+        email: playerEmail,
+        nickname: playerNickname,
         productId: product!.id
       })
     );
@@ -97,7 +106,7 @@ describe("orders flow", () => {
     expect(body.discount).toBe(product!.price - expectedCost);
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
-    const user = await prisma.user.findUnique({ where: { email: "steve@gmail.com" } });
+    const user = await prisma.user.findUnique({ where: { email: playerEmail } });
     expect(user?.role).toBe("USER");
 
     const storedOrder = await prisma.order.findFirstOrThrow({ where: { userId: user!.id } });
@@ -137,9 +146,10 @@ describe("orders flow", () => {
       )
     );
 
+    const duplicateSuffix = randomUUID();
     const payload = {
-      email: "player@example.com",
-      nickname: "SameNick",
+      email: `player-${duplicateSuffix}@example.com`,
+      nickname: `SameNick-${duplicateSuffix}`,
       productId: product.id
     };
 
@@ -182,9 +192,10 @@ describe("orders flow", () => {
       )
     );
 
+    const rankedSuffix = randomUUID();
     const primaryPayload = {
-      email: "player2@example.com",
-      nickname: "RankedPlayer",
+      email: `player2-${rankedSuffix}@example.com`,
+      nickname: `RankedPlayer-${rankedSuffix}`,
       productId: higherPrivilege.id
     };
 
@@ -203,3 +214,4 @@ describe("orders flow", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
+

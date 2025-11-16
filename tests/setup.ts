@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { execSync } from "node:child_process";
 
 import { afterAll, beforeAll, beforeEach } from "vitest";
@@ -43,11 +44,16 @@ beforeAll(() => {
 
 beforeEach(async () => {
   const { prisma } = await import("@/lib/prisma");
-  await prisma.auditLog.deleteMany();
-  await prisma.payment.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE
+      "Payment",
+      "Order",
+      "AuditLog",
+      "Coupon",
+      "Product",
+      "User"
+    RESTART IDENTITY CASCADE
+  `);
 });
 
 afterAll(async () => {
