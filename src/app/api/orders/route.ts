@@ -62,6 +62,15 @@ export async function POST(request: Request) {
     });
   }
 
+  let surchargeDiscount: SurchargeDiscount | null = null;
+  if (product.category === "privilege" && product.easyDonateProductId) {
+    surchargeDiscount = await fetchSurchargeDiscount({
+      shopKey,
+      username: nickname,
+      productId: product.easyDonateProductId
+    });
+  }
+
   const selectedEasyDonateProductId = surchargeDiscount?.discountProductId ?? product.easyDonateProductId;
   if (!selectedEasyDonateProductId) {
     console.error("[orders] Missing EasyDonate product ID for payment");
@@ -81,15 +90,6 @@ export async function POST(request: Request) {
 
   let paymentUrl: string | null = null;
   let externalPaymentId: string | null = null;
-
-  let surchargeDiscount: SurchargeDiscount | null = null;
-  if (product.category === "privilege" && product.easyDonateProductId) {
-    surchargeDiscount = await fetchSurchargeDiscount({
-      shopKey,
-      username: nickname,
-      productId: product.easyDonateProductId
-    });
-  }
 
   const appliedSurcharge = surchargeDiscount ? Math.min(surchargeDiscount.amount, product.price) : 0;
   const subtotalAfterSurcharge = Math.max(product.price - appliedSurcharge, 0);
