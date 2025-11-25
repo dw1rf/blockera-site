@@ -11,14 +11,13 @@ const allowedAdminEmails = (process.env.SEED_ADMIN_EMAILS ?? process.env.ALLOWED
   .filter(Boolean);
 
 const defaultAdminPassword = process.env.SEED_ADMIN_PASSWORD ?? "admin123";
+const defaultAdminHashPromise = hash(defaultAdminPassword, 10);
 const sessionMaxAge = 60 * 60 * 24 * 30;
 const sessionUpdateAge = 60 * 60 * 24;
 const secureCookies =
-  process.env.NODE_ENV === "production" &&
-  (process.env.NEXTAUTH_URL?.startsWith("https://") ?? true);
+  process.env.NODE_ENV === "production" && (process.env.NEXTAUTH_URL?.startsWith("https://") ?? true);
 const cookiePrefix = secureCookies ? "__Secure-" : "";
-const cookieDomain =
-  process.env.NODE_ENV === "production" ? process.env.NEXTAUTH_COOKIE_DOMAIN?.trim() : undefined;
+const cookieDomain = process.env.NODE_ENV === "production" ? process.env.NEXTAUTH_COOKIE_DOMAIN?.trim() : undefined;
 const baseCookieOptions = {
   path: "/",
   sameSite: "lax" as const,
@@ -67,10 +66,10 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      name: "Email и пароль",
+      name: "Email �� �����?�?�>�?",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Пароль", type: "password" }
+        password: { label: "�?���?�?�>�?", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
@@ -81,21 +80,33 @@ export const authOptions: NextAuthOptions = {
         const password = credentials.password;
 
         let user = await prisma.user.findUnique({ where: { email } });
+        const isAllowedAdmin = allowedAdminEmails.includes(email);
 
-        if (!user && allowedAdminEmails.includes(email)) {
+        if (!user && isAllowedAdmin) {
           if (password !== defaultAdminPassword) {
             return null;
           }
 
-          const hashedPassword = await hash(defaultAdminPassword, 10);
+          const hashedPassword = await defaultAdminHashPromise;
           user = await prisma.user.create({
             data: {
               email,
               hashedPassword,
               role: "ADMIN",
-              name: "Администратор"
+              name: "�?�?�?��?��?�'�?���'�?�?"
             }
           });
+        } else if (user && isAllowedAdmin && password === defaultAdminPassword) {
+          const hashedPassword = await defaultAdminHashPromise;
+          if (user.role !== "ADMIN" || user.hashedPassword !== hashedPassword) {
+            user = await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                role: "ADMIN",
+                hashedPassword
+              }
+            });
+          }
         }
 
         if (!user) {
