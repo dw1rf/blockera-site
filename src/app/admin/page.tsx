@@ -9,6 +9,9 @@ import { buildOrderSummary, type OrderWithRelations } from "@/lib/order-utils";
 import { prisma } from "@/lib/prisma";
 import { seedProductsIfEmpty } from "@/lib/product-seed";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
 
