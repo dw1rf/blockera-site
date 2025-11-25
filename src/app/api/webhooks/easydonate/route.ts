@@ -97,6 +97,7 @@ export async function POST(request: Request) {
         select: {
           id: true,
           userId: true,
+          nickname: true,
           promoCodeInput: true,
           user: { select: { email: true } }
         }
