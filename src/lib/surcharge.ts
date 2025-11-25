@@ -22,12 +22,14 @@ interface FetchSurchargeParams {
   shopKey: string;
   username: string;
   productId: string;
+  serverId?: number | null;
 }
 
 export async function fetchSurchargeDiscount({
   shopKey,
   username,
-  productId
+  productId,
+  serverId
 }: FetchSurchargeParams): Promise<SurchargeDiscount | null> {
   if (!shopKey || !username || !productId) {
     return null;
@@ -37,6 +39,9 @@ export async function fetchSurchargeDiscount({
     const endpoint = new URL(SURCHARGE_ENDPOINT);
     endpoint.searchParams.set("username", username);
     endpoint.searchParams.set("product_id", productId);
+    if (typeof serverId === "number" && Number.isFinite(serverId) && serverId > 0) {
+      endpoint.searchParams.set("server_id", String(Math.round(serverId)));
+    }
 
     const response = await fetch(endpoint, {
       method: "GET",
@@ -45,18 +50,24 @@ export async function fetchSurchargeDiscount({
     });
 
     if (!response.ok) {
+      console.warn("[surcharge] EasyDonate returned non-OK status", response.status);
       return null;
     }
 
     const payload = (await response.json()) as SurchargeApiResponse;
     if (!payload.success || !payload.response) {
+      console.warn("[surcharge] No discount in payload", payload);
       return null;
     }
 
-    const discountValue = Number(payload.response.discount);
-    if (!Number.isFinite(discountValue) || discountValue <= 0) {
-      return null;
-    }
+  const discountValue = Number(payload.response.discount);
+  if (!Number.isFinite(discountValue) || discountValue <= 0) {
+    console.info("[surcharge] Discount is zero or invalid", {
+      discount: payload.response.discount,
+      target: payload.response.target
+    });
+    return null;
+  }
 
     const normalizedDiscount = Math.round(discountValue);
     const discountProductId =

@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { fetchSurchargeDiscount, type SurchargeDiscount } from "@/lib/surcharge";
 import type { Coupon } from "@prisma/client";
 
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
 export async function POST(request: Request) {
   const data = await request.json();
 
@@ -30,6 +32,10 @@ export async function POST(request: Request) {
     data.nickname.length === 0
   ) {
     return NextResponse.json({ message: "Invalid order payload" }, { status: 400 });
+  }
+
+  if (!isValidEmail(data.email)) {
+    return NextResponse.json({ message: "������� ��������� email" }, { status: 400 });
   }
 
   const product = await prisma.product.findUnique({ where: { id: data.productId } });
@@ -125,7 +131,8 @@ export async function POST(request: Request) {
     surchargeDiscount = await fetchSurchargeDiscount({
       shopKey,
       username: nickname,
-      productId: product.easyDonateProductId
+      productId: product.easyDonateProductId,
+      serverId: resolvedServerId
     });
   }
 

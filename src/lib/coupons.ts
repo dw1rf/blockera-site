@@ -18,5 +18,8 @@ export async function issueThankYouCoupon(params: { email: string; userId?: stri
     }
   });
 
-  await sendCouponEmail({ to: params.email, code: coupon.code, expiresAt });
+  const sent = await sendCouponEmail({ to: params.email, code: coupon.code, expiresAt });
+  if (!sent) {
+    console.warn("[coupon] Coupon email was not sent", { orderId: params.orderId, email: params.email });
+  }
 }
