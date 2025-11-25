@@ -20,7 +20,7 @@ export default function DonatePage() {
         <div className="flex flex-col items-start gap-6 rounded-3xl border border-white/10 bg-white/[0.05] p-12 text-left shadow-card backdrop-blur">
           <span className="text-xs uppercase tracking-[0.4em] text-primary">blockera donate</span>
           <h1 className="text-balance text-4xl font-semibold uppercase tracking-[0.2em] text-white md:text-5xl">
-            Выбирай привилегии и поддержку сервера без Pay-to-Win
+            Выбирай привилегии и поддержи сервер.
           </h1>
           <p className="max-w-2xl text-base text-white/70 md:text-lg">
             Донат-магазин помогает оплачивать хостинг, запускать новые активности и поддерживать команду модераторов.

@@ -1,57 +1,65 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "\u041F\u043E\u043B\u0438\u0442\u0438\u043A\u0430 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430 | Blockera",
+  title: "Политика возврата | Blockera",
   description:
-    "\u041F\u043E\u044F\u0441\u043D\u0435\u043D\u0438\u0435 \u0443\u0441\u043B\u043E\u0432\u0438\u0439 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430 \u0441\u0440\u0435\u0434\u0441\u0442\u0432 \u0437\u0430 \u043F\u043E\u043A\u0443\u043F\u043A\u0438 \u043D\u0430 \u0441\u0430\u0439\u0442\u0435 Blockera."
+    "Пояснение условий возврата средств за покупки на сайте Blockera."
 };
 
 const TEXT = {
-  badge: "\u042E\u0440\u0438\u0434\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B",
-  heading: "\u041F\u043E\u043B\u0438\u0442\u0438\u043A\u0430 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430",
+  badge: "Юридические документы",
+  heading: "Политика возврата",
   intro:
-    "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043E\u043F\u0438\u0441\u044B\u0432\u0430\u0435\u0442 \u043F\u043E\u0440\u044F\u0434\u043E\u043A \u0440\u0430\u0441\u0441\u043C\u043E\u0442\u0440\u0435\u043D\u0438\u044F \u0437\u0430\u044F\u0432\u043E\u043A \u043D\u0430 \u0432\u043E\u0437\u0432\u0440\u0430\u0442 \u0441\u0440\u0435\u0434\u0441\u0442\u0432 \u0437\u0430 \u0446\u0438\u0444\u0440\u043E\u0432\u044B\u0435 \u0442\u043E\u0432\u0430\u0440\u044B Blockera. \u041F\u0440\u0430\u0432\u0438\u043B\u0430 \u043F\u0440\u0438\u043C\u0435\u043D\u0438\u043C\u044B \u043A\u043E \u0432\u0441\u0435\u043C \u043F\u0440\u0438\u0432\u0438\u043B\u0435\u0433\u0438\u044F\u043C, \u0431\u0443\u0441\u0442\u0435\u0440\u0430\u043C, \u043A\u0435\u0439\u0441\u0430\u043C \u0438 \u043A\u043E\u0441\u043C\u0435\u0442\u0438\u043A\u0435.",
-  eligibilityTitle: "\u0421\u0440\u043E\u043A\u0438 \u043F\u043E\u0434\u0430\u0447\u0438 \u0437\u0430\u044F\u0432\u043A\u0438",
+    "Страница описывает порядок рассмотрения заявок на возврат средств за цифровые товары Blockera. Правила применимы ко всем привилегиям, бустерам, кейсам и косметике.",
+  eligibilityTitle: "Сроки подачи заявки",
   eligibilityBody:
-    "\u0417\u0430\u044F\u0432\u043A\u0430 \u0434\u043E\u043B\u0436\u043D\u0430 \u0431\u044B\u0442\u044C \u043F\u043E\u0434\u0430\u043D\u0430 \u043D\u0435 \u043F\u043E\u0437\u0434\u043D\u0435\u0435 14 \u043A\u0430\u043B\u0435\u043D\u0434\u0430\u0440\u043D\u044B\u0445 \u0434\u043D\u0435\u0439 \u0441 \u043C\u043E\u043C\u0435\u043D\u0442\u0430 \u043F\u043E\u043A\u0443\u043F\u043A\u0438. \u041E\u0431\u0440\u0430\u0442\u0438\u0442\u044C\u0441\u044F \u043C\u043E\u0436\u0435\u0442 \u0442\u043E\u043B\u044C\u043A\u043E \u0432\u043B\u0430\u0434\u0435\u043B\u0435\u0446 \u043F\u043B\u0430\u0442\u0435\u0436\u0430.",
-  deniedTitle: "\u0412\u043E\u0437\u0432\u0440\u0430\u0442 \u043D\u0435 \u043E\u0444\u043E\u0440\u043C\u043B\u044F\u0435\u0442\u0441\u044F, \u0435\u0441\u043B\u0438",
+    "Заявка должна быть подана не позднее 14 календарных дней с момента покупки. Обратиться может только владелец платежа.",
+  deniedTitle: "Возврат не оформляется, если",
   deniedList: [
-    "\u0423\u0441\u043B\u0443\u0433\u0430 \u0443\u0436\u0435 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0430 \u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0430 (\u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440, \u043E\u0442\u043A\u0440\u044B\u0442 \u043A\u0435\u0439\u0441 \u0438\u043B\u0438 \u0430\u043A\u0442\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u043D \u0431\u0443\u0441\u0442\u0435\u0440).",
-    "\u0410\u043A\u043A\u0430\u0443\u043D\u0442 \u0431\u044B\u043B \u0437\u0430\u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u043D \u0437\u0430 \u043D\u0430\u0440\u0443\u0448\u0435\u043D\u0438\u0435 \u043F\u0440\u0430\u0432\u0438\u043B \u0438\u043B\u0438 \u0443\u043C\u044B\u0448\u043B\u0435\u043D\u043D\u043E\u0433\u043E \u0432\u0440\u0435\u0434\u0430.",
-    "\u0411\u044B\u043B\u0430 \u043E\u0442\u043A\u0440\u044B\u0442\u0430 \u0447\u0430\u0440\u0434\u0436\u0431\u044D\u043A-\u043F\u0440\u0435\u0442\u0435\u043D\u0437\u0438\u044F \u0431\u0435\u0437 \u043F\u0440\u0435\u0434\u0432\u0430\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0433\u043E \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u044F \u0432 Blockera."
+    "Услуга уже получена и использована (например, открыт кейс или активирован бустер).",
+    "Аккаунт был заблокирован за нарушение правил или умышленного вреда.",
+    "Была открыта чарджбэк-претензия без предварительного обращения в Blockera."
   ],
-  stepsTitle: "\u041A\u0430\u043A \u043F\u043E\u0434\u0430\u0442\u044C \u0437\u0430\u044F\u0432\u043A\u0443",
+  stepsTitle: "Как подать заявку",
   stepsList: [
-    "\u0421\u043E\u0431\u0435\u0440\u0438\u0442\u0435 \u0447\u0435\u043A \u0438\u043B\u0438 ID \u0437\u0430\u043A\u0430\u0437\u0430, \u0430 \u0442\u0430\u043A\u0436\u0435 \u043D\u0438\u043A\u043D\u0435\u0439\u043C, \u0443\u043A\u0430\u0437\u0430\u043D\u043D\u044B\u0439 \u043F\u0440\u0438 \u043E\u043F\u043B\u0430\u0442\u0435.",
-    "\u041D\u0430\u043F\u0438\u0448\u0438\u0442\u0435 \u043D\u0430 support@blockera.ru \u0438\u043B\u0438 \u043E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u0442\u0438\u043A\u0435\u0442 \u0432 Discord \u0441\u0435\u0440\u0432\u0435\u0440\u0430.",
-    "\u0414\u043E\u0436\u0434\u0438\u0442\u0435\u0441\u044C \u043E\u0442\u0432\u0435\u0442\u0430 \u043A\u043E\u043C\u0430\u043D\u0434\u044B (\u0434\u043E 7 \u0440\u0430\u0431\u043E\u0447\u0438\u0445 \u0434\u043D\u0435\u0439)."
+    "Соберите чек или ID заказа, а также никнейм, указанный при оплате.",
+    "Напишите на blockera.play@inbox.ru или откройте обращение через telegram бота @BlockEra_BOT.",
+    "Дождитесь ответа команды (до 7 рабочих дней)."
   ],
   stepsBody:
-    "\u041F\u0440\u0438 \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u043C \u0440\u0435\u0448\u0435\u043D\u0438\u0438 \u0441\u0440\u0435\u0434\u0441\u0442\u0432\u0430 \u0432\u043E\u0437\u0432\u0440\u0430\u0449\u0430\u044E\u0442\u0441\u044F \u043D\u0430 \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0439 \u043C\u0435\u0442\u043E\u0434 \u043E\u043F\u043B\u0430\u0442\u044B (\u0441\u0440\u043E\u043A \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u043E\u0442 \u043F\u043B\u0430\u0442\u0435\u0436\u043D\u043E\u0439 \u0441\u0438\u0441\u0442\u0435\u043C\u044B).",
-  disputesTitle: "\u0420\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u0435 \u0441\u043F\u043E\u0440\u043E\u0432",
+    "При положительном решении средства возвращаются на исходный метод оплаты (срок зависит от платёжной системы).",
+  disputesTitle: "Разрешение споров",
   disputesBody:
-    "\u041C\u044B \u043F\u0440\u0435\u0434\u043F\u043E\u0447\u0438\u0442\u0430\u0435\u043C \u0440\u0435\u0448\u0430\u0442\u044C \u0432\u043E\u043F\u0440\u043E\u0441\u044B \u043D\u0430\u043F\u0440\u044F\u043C\u0443\u044E. \u041F\u0440\u0438 \u0447\u0430\u0440\u0434\u0436\u0431\u044D\u043A\u0435 \u0431\u0435\u0437 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u044F \u0432 \u0441\u043B\u0443\u0436\u0431\u0443 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0438 \u043C\u044B \u0432\u0440\u0435\u043C\u0435\u043D\u043D\u043E \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0438\u043C \u0434\u043E\u0441\u0442\u0443\u043F \u043A \u0430\u043A\u043A\u0430\u0443\u043D\u0442\u0443 \u0434\u043E \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0438\u044F \u0440\u0430\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F.",
+    "Мы предпочитаем решать вопросы напрямую. При чарджбэке без обращения в службу поддержки мы временно ограничим доступ к аккаунту до завершения расследования.",
   footer:
-    "\u041F\u043E\u043B\u0438\u0442\u0438\u043A\u0430 \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u0435\u0442 \u0441 6 \u043D\u043E\u044F\u0431\u0440\u044F 2025 \u0433\u043E\u0434\u0430. \u041E\u0431 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F\u0445 \u043C\u044B \u0441\u043E\u043E\u0431\u0449\u0430\u0435\u043C \u043D\u0430 \u0441\u0430\u0439\u0442\u0435 \u0438 \u0432 Discord."
+    "Политика действует с 6 ноября 2025 года. Об изменениях мы сообщаем на сайте и в Discord."
 };
 
 export default function RefundPolicyPage() {
   return (
     <div className="relative mx-auto max-w-4xl px-6 py-24">
       <div className="space-y-6">
-        <span className="text-xs uppercase tracking-[0.4em] text-primary">{TEXT.badge}</span>
-        <h1 className="text-3xl font-semibold uppercase tracking-[0.2em] text-white md:text-4xl">{TEXT.heading}</h1>
+        <span className="text-xs uppercase tracking-[0.4em] text-primary">
+          {TEXT.badge}
+        </span>
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.2em] text-white md:text-4xl">
+          {TEXT.heading}
+        </h1>
         <p className="text-base text-white/70">{TEXT.intro}</p>
       </div>
 
       <div className="mt-12 space-y-10 text-white/70">
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">{TEXT.eligibilityTitle}</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {TEXT.eligibilityTitle}
+          </h2>
           <p>{TEXT.eligibilityBody}</p>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">{TEXT.deniedTitle}</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {TEXT.deniedTitle}
+          </h2>
           <ul className="list-disc space-y-2 pl-6">
             {TEXT.deniedList.map((item) => (
               <li key={item}>{item}</li>
@@ -60,7 +68,9 @@ export default function RefundPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">{TEXT.stepsTitle}</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {TEXT.stepsTitle}
+          </h2>
           <ol className="list-decimal space-y-2 pl-6">
             {TEXT.stepsList.map((item) => (
               <li key={item}>{item}</li>
@@ -70,7 +80,9 @@ export default function RefundPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">{TEXT.disputesTitle}</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {TEXT.disputesTitle}
+          </h2>
           <p>{TEXT.disputesBody}</p>
         </section>
 

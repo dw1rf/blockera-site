@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { seedProductsIfEmpty } from "@/lib/product-seed";
 
 const CATEGORY_VALUES: ProductCategory[] = ["privilege", "case", "booster", "cosmetic"];
+const HIDDEN_STATUSES = new Set(["HIDDEN", "ARCHIVED"]);
 
 const normalizeCategory = (value: string): ProductCategory => {
   const next = value as ProductCategory;
@@ -55,13 +56,24 @@ const buildEasyDonateMaps = async (
   return new Map(results.filter((entry): entry is [number, Map<string, EasyDonateProduct>] => entry !== null));
 };
 
+const isVisibleStatus = (status: string | null | undefined) => {
+  if (typeof status !== "string") {
+    return true;
+  }
+  const normalized = status.trim().toUpperCase();
+  if (normalized.length === 0 || normalized === "ACTIVE") {
+    return true;
+  }
+  return !HIDDEN_STATUSES.has(normalized);
+};
+
 export async function GET() {
   await seedProductsIfEmpty();
 
-  const items = await prisma.product.findMany({
-    where: { status: "ACTIVE" },
+  const allProducts = await prisma.product.findMany({
     orderBy: { price: "asc" }
   });
+  const items = allProducts.filter((product) => isVisibleStatus(product.status));
 
   const shopKey = process.env.EASYDONATE_SHOP_KEY;
   const defaultServerId = toOptionalServerId(process.env.EASYDONATE_DEFAULT_SERVER_ID);

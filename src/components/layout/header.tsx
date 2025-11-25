@@ -151,11 +151,11 @@ export function Header() {
 
       <div
         className={cn(
-          "md:hidden",
-          open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          "md:hidden absolute inset-x-0 top-full transition-opacity duration-200",
+          open ? "pointer-events-auto opacity-100" : "pointer-events-none invisible opacity-0"
         )}
       >
-        <div className="space-y-6 border-t border-white/10 bg-midnight/95 px-6 pb-10 pt-6">
+        <div className="mx-auto max-w-6xl space-y-6 border-t border-white/10 bg-midnight/95 px-6 pb-10 pt-6 shadow-xl">
           <nav className="flex flex-col gap-4">{renderNavList("mobile")}</nav>
           <div className="flex flex-col gap-3">
             <a
