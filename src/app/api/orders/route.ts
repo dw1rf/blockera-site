@@ -68,8 +68,13 @@ export async function POST(request: Request) {
     });
   }
 
+  let completedPrivileges: Array<{
+    productId: string;
+    product: { id: string; name: string | null; price: number; privilegeRank: number | null };
+  }> = [];
+
   if (product.category === "privilege") {
-    const completedPrivileges = await prisma.order.findMany({
+    completedPrivileges = await prisma.order.findMany({
       where: {
         nickname,
         status: "COMPLETED",
@@ -80,6 +85,7 @@ export async function POST(request: Request) {
           select: {
             id: true,
             name: true,
+            price: true,
             privilegeRank: true
           }
         }
@@ -127,13 +133,38 @@ export async function POST(request: Request) {
   }
 
   let surchargeDiscount: SurchargeDiscount | null = null;
-  if (product.category === "privilege" && product.easyDonateProductId) {
-    surchargeDiscount = await fetchSurchargeDiscount({
-      shopKey,
-      username: nickname,
-      productId: product.easyDonateProductId,
-      serverId: resolvedServerId
-    });
+  let ownedPrivilegeCredit = 0;
+
+  if (product.category === "privilege") {
+    const highestOwned = completedPrivileges
+      .filter((order) => typeof order.product?.privilegeRank === "number")
+      .reduce<(typeof completedPrivileges)[number] | null>((best, current) => {
+        const currentRank = current.product?.privilegeRank ?? null;
+        if (typeof currentRank !== "number") return best;
+        if (!best) return current;
+        const bestRank = best.product?.privilegeRank ?? null;
+        if (typeof bestRank !== "number" || currentRank > bestRank) return current;
+        return best;
+      }, null);
+
+    if (
+      highestOwned &&
+      typeof highestOwned.product?.privilegeRank === "number" &&
+      typeof product.privilegeRank === "number" &&
+      highestOwned.product.privilegeRank < product.privilegeRank &&
+      typeof highestOwned.product.price === "number"
+    ) {
+      ownedPrivilegeCredit = Math.max(0, highestOwned.product.price);
+    }
+
+    if (product.easyDonateProductId) {
+      surchargeDiscount = await fetchSurchargeDiscount({
+        shopKey,
+        username: nickname,
+        productId: product.easyDonateProductId,
+        serverId: resolvedServerId
+      });
+    }
   }
 
   const selectedEasyDonateProductId = surchargeDiscount?.discountProductId ?? product.easyDonateProductId;
@@ -156,7 +187,8 @@ export async function POST(request: Request) {
   let paymentUrl: string | null = null;
   let externalPaymentId: string | null = null;
 
-  const appliedSurcharge = surchargeDiscount ? Math.min(surchargeDiscount.amount, product.price) : 0;
+  const appliedSurchargeRaw = Math.max(surchargeDiscount?.amount ?? 0, ownedPrivilegeCredit);
+  const appliedSurcharge = Math.min(appliedSurchargeRaw, product.price);
   const subtotalAfterSurcharge = Math.max(product.price - appliedSurcharge, 0);
 
   let appliedCoupon: Coupon | null = null;

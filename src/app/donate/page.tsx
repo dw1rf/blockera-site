@@ -2,14 +2,17 @@
 
 import { DonateShop } from "@/components/donate/donate-shop";
 import { CopyIpButton } from "@/components/copy-ip-button";
+import { DonateGoals } from "@/components/metrics/donate-goals";
 
 export const metadata: Metadata = {
-  title: "\u0414\u043e\u043d\u0430\u0442-\u043c\u0430\u0433\u0430\u0437\u0438\u043d Blockera",
+  title: "Донат-магазин Blockera",
   description:
-    "\u0412\u044b\u0431\u0438\u0440\u0430\u0439 \u043f\u0440\u0438\u0432\u0438\u043b\u0435\u0433\u0438\u0438, \u043a\u043e\u0441\u043c\u0435\u0442\u0438\u043a\u0443 \u0438 \u0431\u0443\u0441\u0442\u0435\u0440\u044b Blockera \u0431\u0435\u0437 pay-to-win \u0431\u0430\u0440\u044c\u0435\u0440\u043e\u0432. \u0414\u043e\u043d\u0430\u0442 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u0435 \u0441\u0435\u0440\u0432\u0435\u0440\u0430 \u0438 \u043d\u043e\u0432\u044b\u0435 \u0438\u0432\u0435\u043d\u0442\u044b."
+    "Выбирай привилегии, косметику и бустеры Blockera без pay-to-win барьеров. Донат поддерживает развитие сервера и новые ивенты."
 };
 
-export default function DonatePage() {
+export default function DonatePage({ searchParams }: { searchParams?: { status?: string } }) {
+  const status = searchParams?.status ?? null;
+
   return (
     <div className="relative isolate bg-midnight">
       <div className="absolute inset-0">
@@ -20,11 +23,10 @@ export default function DonatePage() {
         <div className="flex flex-col items-start gap-6 rounded-3xl border border-white/10 bg-white/[0.05] p-12 text-left shadow-card backdrop-blur">
           <span className="text-xs uppercase tracking-[0.4em] text-primary">blockera donate</span>
           <h1 className="text-balance text-4xl font-semibold uppercase tracking-[0.2em] text-white md:text-5xl">
-            Выбирай привилегии и поддержи сервер.
+            Реальный донат без pay-to-win.
           </h1>
           <p className="max-w-2xl text-base text-white/70 md:text-lg">
-            Донат-магазин помогает оплачивать хостинг, запускать новые активности и поддерживать команду модераторов.
-            Все предметы настроены так, чтобы не ломать баланс и честный PvP.
+            Донат-магазин поддерживает развитие сервера, новые эвенты и стабильную работу. Мы даём плюсы, но не ломаем баланс PvP.
           </p>
           <CopyIpButton ipAddress="blockera.goida.host" />
         </div>
@@ -33,6 +35,8 @@ export default function DonatePage() {
           <DonateShop />
         </div>
       </div>
+
+      <DonateGoals status={status} />
     </div>
   );
 }
