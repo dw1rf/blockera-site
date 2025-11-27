@@ -53,6 +53,8 @@ export function OrdersTable({ initialOrders, initialSummary }: Props) {
 
     const updated = (await response.json()) as Order;
     setOrders((prev) => prev.map((order) => (order.id === updated.id ? { ...order, status: updated.status } : order)));
+    // Refresh summary so цифры сходятся без перезагрузки
+    void refresh();
   };
 
   const refresh = async () => {

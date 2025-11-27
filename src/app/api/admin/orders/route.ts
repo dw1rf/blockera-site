@@ -4,6 +4,9 @@ import { AdminAccessError, ensureAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { buildOrderFilter, buildOrderSummary, cancelExpiredOrders } from "@/lib/order-utils";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function handleAdminError(error: unknown) {
   if (error instanceof AdminAccessError) {
     return NextResponse.json({ message: "Недостаточно прав" }, { status: 403 });
