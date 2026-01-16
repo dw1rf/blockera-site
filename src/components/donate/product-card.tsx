@@ -19,11 +19,11 @@ const PRODUCT_BACKGROUND_BY_ID: Record<string, string> = {
   drako: "/images/drako.png",
   soul: "/images/drako.png",
   platinum: "/images/platinum.png",
-  ethereal: "/images/ethereal.png",
+  ethereal: "/images/babyera.png",
   immortal: "/images/immortal.png",
   shine: "/images/shine.png",
-  babyera: "/images/babyera.png",
-  legend: "/images/babyera.png"
+  babyera: "/images/ethereal.png",
+  legend: "/images/ethereal.png"
 };
 
 const getProductBackgroundSrc = (id: string) => PRODUCT_BACKGROUND_BY_ID[id] ?? `/images/${id}.png`;
