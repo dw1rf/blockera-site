@@ -14,6 +14,8 @@ const sortOptions = [
   { value: "price-desc", label: "Цена по убыванию" }
 ] as const;
 
+const PRODUCTS_REQUEST_TIMEOUT_MS = 15_000;
+
 type SortValue = (typeof sortOptions)[number]["value"];
 
 type ProductResponse = Product & {
@@ -32,11 +34,36 @@ export function DonateShop() {
     let isMounted = true;
 
     async function loadProducts() {
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), PRODUCTS_REQUEST_TIMEOUT_MS);
+
       try {
         setLoading(true);
-        const response = await fetch("/api/products", { cache: "no-store" });
+        const response = await fetch("/api/products", { cache: "no-store", signal: controller.signal });
         if (!response.ok) {
-          throw new Error("Не удалось получить список товаров");
+          let message: string | null = null;
+
+          try {
+            const data = (await response.clone().json()) as { message?: unknown };
+            if (typeof data?.message === "string" && data.message.trim().length > 0) {
+              message = data.message.trim();
+            }
+          } catch {
+            // ignore JSON parsing errors
+          }
+
+          if (!message) {
+            try {
+              const text = (await response.clone().text()).trim();
+              if (text.length > 0) {
+                message = text;
+              }
+            } catch {
+              // ignore text parsing errors
+            }
+          }
+
+          throw new Error(message ?? `Не удалось получить список товаров (HTTP ${response.status})`);
         }
         const data = (await response.json()) as ProductResponse[];
         if (!isMounted) return;
@@ -55,8 +82,13 @@ export function DonateShop() {
         setError(null);
       } catch (err) {
         if (!isMounted) return;
-        setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+        if (err instanceof Error && err.name === "AbortError") {
+          setError("Сервер не отвечает при загрузке товаров. Проверьте, что доступен /api/products.");
+        } else {
+          setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+        }
       } finally {
+        window.clearTimeout(timeoutId);
         if (isMounted) {
           setLoading(false);
         }

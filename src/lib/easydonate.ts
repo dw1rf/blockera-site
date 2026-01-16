@@ -1,5 +1,6 @@
-const EASYDONATE_API_BASE_URL = "https://easydonate.ru/api/v3";
+const EASYDONATE_API_BASE_URL = "https://easydonate.ru/api/v3/";
 const PRODUCT_CACHE_TTL_MS = 1000 * 60 * 3; // cache EasyDonate payloads for 3 minutes
+const EASYDONATE_REQUEST_TIMEOUT_MS = 8_000;
 
 type EasyDonateProductsResponse = {
   success?: boolean;
@@ -35,6 +36,7 @@ interface FetchProductsOptions {
   serverId: number;
   skipCache?: boolean;
   cacheTtlMs?: number;
+  timeoutMs?: number;
 }
 
 type CacheEntry = {
@@ -76,7 +78,8 @@ export async function fetchEasyDonateProducts({
   shopKey,
   serverId,
   skipCache = false,
-  cacheTtlMs = PRODUCT_CACHE_TTL_MS
+  cacheTtlMs = PRODUCT_CACHE_TTL_MS,
+  timeoutMs = EASYDONATE_REQUEST_TIMEOUT_MS
 }: FetchProductsOptions): Promise<EasyDonateProduct[]> {
   if (!Number.isFinite(serverId) || serverId <= 0) {
     throw new Error("EasyDonate server ID is not configured");
@@ -87,15 +90,34 @@ export async function fetchEasyDonateProducts({
     return cached.data;
   }
 
-  const endpoint = new URL("/shop/products", EASYDONATE_API_BASE_URL);
+  const endpoint = new URL("shop/products", EASYDONATE_API_BASE_URL);
   endpoint.searchParams.set("server_id", String(Math.round(serverId)));
 
-  const response = await fetch(endpoint, {
-    headers: {
-      "Shop-Key": shopKey
-    },
-    cache: "no-store"
-  });
+  const controller = new AbortController();
+  const timeoutId =
+    typeof timeoutMs === "number" && Number.isFinite(timeoutMs) && timeoutMs > 0
+      ? setTimeout(() => controller.abort(), timeoutMs)
+      : null;
+
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      headers: {
+        "Shop-Key": shopKey
+      },
+      cache: "no-store",
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("EasyDonate request timed out");
+    }
+    throw error;
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
 
   if (!response.ok) {
     throw new Error(`EasyDonate request failed with status ${response.status}`);

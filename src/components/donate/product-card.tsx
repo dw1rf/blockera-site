@@ -1,5 +1,6 @@
-﻿"use client";
+"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -10,6 +11,22 @@ import type { Product } from "@/lib/donate";
 import { formatCurrency } from "@/lib/price";
 
 const numberFormatter = new Intl.NumberFormat("ru-RU");
+
+const PRODUCT_BACKGROUND_BY_ID: Record<string, string> = {
+  creative: "/images/creative.png",
+  moderator: "/images/moderator.png",
+  admin: "/images/admin.png",
+  drako: "/images/drako.png",
+  soul: "/images/drako.png",
+  platinum: "/images/platinum.png",
+  ethereal: "/images/ethereal.png",
+  immortal: "/images/immortal.png",
+  shine: "/images/shine.png",
+  babyera: "/images/babyera.png",
+  legend: "/images/babyera.png"
+};
+
+const getProductBackgroundSrc = (id: string) => PRODUCT_BACKGROUND_BY_ID[id] ?? `/images/${id}.png`;
 
 interface ProductCardProps {
   product: Product;
@@ -60,6 +77,7 @@ const AGREEMENTS = [
 ] as const;
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [backgroundFailed, setBackgroundFailed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
@@ -113,6 +131,8 @@ export function ProductCard({ product }: ProductCardProps) {
     }
     return numberFormatter.format(product.regionLimit);
   }, [product.regionLimit]);
+
+  const backgroundSrc = getProductBackgroundSrc(product.id);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -210,50 +230,67 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-card backdrop-blur">
-        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+        {!backgroundFailed ? (
+          <div className="pointer-events-none absolute inset-0 z-0">
+            <Image
+              src={backgroundSrc}
+              alt=""
+              fill
+              sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+              className="object-cover opacity-35 transition-transform duration-700 group-hover:scale-105"
+              onError={() => setBackgroundFailed(true)}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-midnight/10 via-midnight/70 to-midnight/95" />
+          </div>
+        ) : null}
+
+        <div className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent" />
         </div>
         {product.highlight ? (
-          <span className="absolute right-6 top-6 z-10 inline-flex rounded-full border border-primary/40 bg-primary/20 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-primary">
+          <span className="absolute right-6 top-6 z-20 inline-flex rounded-full border border-primary/40 bg-primary/20 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-primary">
             {product.highlight}
           </span>
         ) : null}
-        <div className="flex items-start gap-3">
-          <h3 className="text-2xl font-semibold text-white">{product.name}</h3>
-          <p className="ml-auto text-lg font-semibold text-primary">{formatCurrency(product.price)}</p>
-        </div>
-        <div className="mt-4 flex flex-1 flex-col gap-4">
-          <p className="text-sm text-white/70">{product.description}</p>
-          {commandItems.length > 0 ? (
-            <div className="min-h-[140px] max-h-[140px] space-y-2 overflow-y-auto rounded-2xl border border-white/5 bg-white/[0.02] p-4 pr-2 text-sm text-white/70">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/40">{TEXT.commands}</p>
-              <ul className="space-y-1">
-                {commandItems.map((entry, index) => (
-                  <li key={`${product.id}-card-command-${index}`} className="flex gap-2">
-                    <span className="text-primary">-</span>
-                    <span className="flex-1">{entry}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <div className="min-h-[140px]" />
-          )}
-          {formattedRegionLimit ? (
-            <p className="mt-auto text-xs uppercase tracking-[0.35em] text-white/50">
-              {TEXT.regionLimit}: <span className="ml-2 text-white/80">{formattedRegionLimit} блоков</span>
-            </p>
-          ) : null}
-        </div>
-        <div className="pt-6">
-          <Button
-            className="w-full gap-2 bg-gradient-to-r from-primary to-purple-500"
-            onClick={openModal}
-            aria-haspopup="dialog"
-          >
-            <ShoppingCartIcon className="h-4 w-4" />
-            {TEXT.buy}
-          </Button>
+
+        <div className="relative z-20 flex flex-1 flex-col">
+          <div className="flex items-start gap-3">
+            <h3 className="text-2xl font-semibold text-white">{product.name}</h3>
+            <p className="ml-auto text-lg font-semibold text-primary">{formatCurrency(product.price)}</p>
+          </div>
+          <div className="mt-4 flex flex-1 flex-col gap-4">
+            <p className="text-sm text-white/70">{product.description}</p>
+            {commandItems.length > 0 ? (
+              <div className="min-h-[140px] max-h-[140px] space-y-2 overflow-y-auto rounded-2xl border border-white/5 bg-white/[0.02] p-4 pr-2 text-sm text-white/70">
+                <p className="text-xs uppercase tracking-[0.3em] text-white/40">{TEXT.commands}</p>
+                <ul className="space-y-1">
+                  {commandItems.map((entry, index) => (
+                    <li key={`${product.id}-card-command-${index}`} className="flex gap-2">
+                      <span className="text-primary">-</span>
+                      <span className="flex-1">{entry}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="min-h-[140px]" />
+            )}
+            {formattedRegionLimit ? (
+              <p className="mt-auto text-xs uppercase tracking-[0.35em] text-white/50">
+                {TEXT.regionLimit}: <span className="ml-2 text-white/80">{formattedRegionLimit} блоков</span>
+              </p>
+            ) : null}
+          </div>
+          <div className="pt-6">
+            <Button
+              className="w-full gap-2 bg-gradient-to-r from-primary to-purple-500"
+              onClick={openModal}
+              aria-haspopup="dialog"
+            >
+              <ShoppingCartIcon className="h-4 w-4" />
+              {TEXT.buy}
+            </Button>
+          </div>
         </div>
       </div>
 
